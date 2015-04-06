@@ -1,8 +1,13 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
+using Rect = System.Windows.Rect;
 
 namespace Emotions
 {
@@ -27,15 +32,14 @@ namespace Emotions
         private ColorImageFormat _currentColorImageFormat;
         private byte[] _colorImageData;
         private WriteableBitmap _colorImageWritableBitmap;
+        private AdornerLayer _parentAdorner;
+        private List<FaceDrawer> _drawers = new List<FaceDrawer>();
+
 
         public KinectViewer()
         {
             InitializeComponent();
-        }
-
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
+            _parentAdorner = AdornerLayer.GetAdornerLayer(ColorImage);
         }
 
         private void OnSensorChanged(KinectSensor oldSensor, KinectSensor newSensor)
@@ -79,6 +83,20 @@ namespace Emotions
                     colorImageFrame.Width * ((PixelFormats.Bgr32.BitsPerPixel + 7) / 8),
                     0);
             }
+        }
+
+        public void TrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)
+        {
+            var drawer = new FaceDrawer(ColorImage, skeletonFaceTracker);
+            _drawers.Add(drawer);
+            _parentAdorner.Add(drawer);
+        }
+
+        public void UnTrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)
+        {
+            var drawer = _drawers.FirstOrDefault(d => d.Tracker.Equals(skeletonFaceTracker));
+            if(drawer != null)
+                _parentAdorner.Remove(drawer);
         }
     }
 }

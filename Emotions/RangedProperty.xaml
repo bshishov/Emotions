@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="Emotions.RangedProperty"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignWidth="300" BorderBrush="#FF747474" BorderThickness="0,0,0,1" SizeChanged="UserControl_SizeChanged">
+    <UserControl.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FFF7F7F7" Offset="1"/>
+            <GradientStop Color="White"/>
+        </LinearGradientBrush>
+    </UserControl.Background>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="1" Grid.RowSpan="1" x:Name="ValueRect" Grid.ColumnSpan="2" Width="50" HorizontalAlignment="Left">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF51DC8A" Offset="1"/>
+                    <GradientStop Color="#FF87FFB8"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Label Content="Some Value Name" Grid.Row="0" Grid.Column="0" x:Name="CaptionLabel" Padding="2,2,2,0" FontSize="16"/>
+        <Label Content="0.5123" Grid.Row="0" Grid.Column="1"  x:Name="ValueLabel" FontSize="16" Padding="2,2,2,0" HorizontalAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="0" Grid.Column="0" x:Name="MinLabel" Padding="2" FontSize="10" HorizontalAlignment="Left" Foreground="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+            <Label Content="0.5" Grid.Column="1" x:Name="CenterLabel" Padding="2" FontSize="10" HorizontalAlignment="Center" Foreground="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+            <Label Content="1" Grid.Column="2" x:Name="MaxLabel" Padding="2" FontSize="10" HorizontalAlignment="Right" Foreground="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+        </Grid>
+        <TickBar x:Name="TickBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TickFrequency="1" Minimum="0" Maximum="10" Fill="#FFAAAAAA" VerticalAlignment="Bottom" Height="5" />
+    </Grid>
+</UserControl>
