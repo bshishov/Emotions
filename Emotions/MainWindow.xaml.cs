@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
@@ -12,15 +14,19 @@ namespace Emotions
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public ObservableCollection<AUCoeffDesc> AUCoeffs { get; set; }
-
         private KinectSensor _sensor;
         private FaceDetector _tracker;
+        private TrainingDataSet _trainingData;
+        private FaceTrackFrame _lastFrame;
+        
+        public ComboBoxItem SelectedEmotion { get; set; }
+        public string TrainingDBFile{ get; set; }
+        public string TrainingComment { get; set; }
+        public bool RTAUTracking { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            AUCoeffs = new ObservableCollection<AUCoeffDesc>();
             this.DataContext = this;
 
             if (KinectSensor.KinectSensors.Count > 0)
@@ -32,6 +38,23 @@ namespace Emotions
             {
                 throw new Exception("No kinect sensor detected");
             }
+
+
+            AU1.Caption = String.Format("AU 1 {0}", Enum.GetName(typeof(AnimationUnit), 0));
+            AU2.Caption = String.Format("AU 2 {0}", Enum.GetName(typeof(AnimationUnit), 1));
+            AU3.Caption = String.Format("AU 3 {0}", Enum.GetName(typeof(AnimationUnit), 2));
+            AU4.Caption = String.Format("AU 4 {0}", Enum.GetName(typeof(AnimationUnit), 3));
+            AU5.Caption = String.Format("AU 5 {0}", Enum.GetName(typeof(AnimationUnit), 4));
+            AU6.Caption = String.Format("AU 6 {0}", Enum.GetName(typeof(AnimationUnit), 5));
+
+            TrainingDBFile = "database.csv";
+            TrainingComment = "";
+            SelectedEmotion = new ComboBoxItem() {Content = "Neutral"};
+            NotifyPropertyChanged("SelectedEmotion");
+            NotifyPropertyChanged("TrainingDBFile");
+            NotifyPropertyChanged("TrainingComment");
+
+            _trainingData = TrainingDataSet.FromFile(TrainingDBFile);
         }
 
         private void InitSensor()
@@ -78,6 +101,7 @@ namespace Emotions
         private void TrackerOnSkeletonUnTracked(object sender, SkeletonTrackArgs args)
         {
             Viewer.UnTrackSkeleton(args.SkeletonFaceTracker);
+            args.SkeletonFaceTracker.TrackSucceed -= SkeletonFaceTrackerOnTrackSucceed;
         }
 
         private void TrackerOnSkeletonTracked(object sender, SkeletonTrackArgs args)
@@ -86,19 +110,34 @@ namespace Emotions
             args.SkeletonFaceTracker.TrackSucceed += SkeletonFaceTrackerOnTrackSucceed;
         }
 
+        private int _frameNum = 0;
+        private int _frameSkip = 15;
+
         private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame)
         {
+            _lastFrame = frame;
+            if(!RTAUTracking)
+                return;
+            if (_frameNum++ < _frameSkip)
+                return;
+            
+            _frameNum = 0;
+            
             var au = frame.GetAnimationUnitCoefficients();
-            AUCoeffs.Clear();
-            for (var i = 0; i < au.Count; i++)
-            {
-                AUCoeffs.Add(new AUCoeffDesc()
-                {
-                    Name = String.Format("AU {0} {1}", i, Enum.GetName(typeof(AnimationUnit), i)),
-                    Value = au[i]
-                });    
-            }
-            NotifyPropertyChanged("AUCoeffs");
+            AU1.Value = au[0];
+            AU2.Value = au[1];
+            AU3.Value = au[2];
+            AU4.Value = au[3];
+            AU5.Value = au[4];
+            AU6.Value = au[5];
+
+            PosXLabel.Content = frame.Translation.X;
+            PosYLabel.Content = frame.Translation.Y;
+            PosZLabel.Content = frame.Translation.Z;
+
+            RotXLabel.Content = frame.Rotation.X;
+            RotYLabel.Content = frame.Rotation.Y;
+            RotZLabel.Content = frame.Rotation.Z;
         }
 
         private void WindowClosed(object sender, EventArgs e)
@@ -113,6 +152,15 @@ namespace Emotions
             string propertyName)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnTrainingRecordSave(object sender, RoutedEventArgs e)
+        {
+            if(_lastFrame == null)
+                return;
+
+            _trainingData.Rows.Add(new TrainingDataSet.TrainingDataRow((string)SelectedEmotion.Content, TrainingComment, _lastFrame));
+            _trainingData.ToFile(TrainingDBFile);
         }
     }
 

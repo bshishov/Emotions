@@ -3,12 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:emotions="clr-namespace:Emotions"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <AdornerDecorator>
-            <Image x:Name="ColorImage" />
-        </AdornerDecorator>
+             d:DesignHeight="300" d:DesignWidth="501">
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ToolBar Grid.Row="0">
+            <Label>Opacity:</Label>
+            <Slider Width="50" VerticalAlignment="Center" Value="100" Maximum="100" Minimum="0" ValueChanged="Slider_ValueChanged"/>
+            <Separator />
+            <CheckBox IsChecked="True" Content="Color" Margin="2" Checked="ShowColorChecked" Unchecked="ShowColorUnChecked"/>
+            <CheckBox IsChecked="True" Content="Face"  Margin="2" Checked="ShowFaceChecked" Unchecked="ShowFaceUnChecked"/>
+        </ToolBar>
+        <Viewbox Grid.Row="1" Stretch="Uniform">
+            <AdornerDecorator Width="640" Height="480">
+                <Image x:Name="ColorImage" Width="640" Height="480"/>
+            </AdornerDecorator>
+        </Viewbox>
     </Grid>
 </UserControl>

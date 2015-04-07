@@ -23,6 +23,7 @@ namespace Emotions
             new PropertyMetadata(
                 null, (o, args) => ((KinectViewer)o).OnSensorChanged((KinectSensor)args.OldValue, (KinectSensor)args.NewValue)));
 
+       
         public KinectSensor Kinect
         {
             get { return (KinectSensor) GetValue(KinectProperty); }
@@ -34,7 +35,6 @@ namespace Emotions
         private WriteableBitmap _colorImageWritableBitmap;
         private AdornerLayer _parentAdorner;
         private List<FaceDrawer> _drawers = new List<FaceDrawer>();
-
 
         public KinectViewer()
         {
@@ -97,6 +97,36 @@ namespace Emotions
             var drawer = _drawers.FirstOrDefault(d => d.Tracker.Equals(skeletonFaceTracker));
             if(drawer != null)
                 _parentAdorner.Remove(drawer);
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(ColorImage != null)
+                ColorImage.Opacity = (e.NewValue/100);
+        }
+
+        private void ShowColorChecked(object sender, RoutedEventArgs e)
+        {
+            if (ColorImage != null)
+                ColorImage.Visibility = Visibility.Visible;
+        }
+
+        private void ShowFaceChecked(object sender, RoutedEventArgs e)
+        {
+            if(_parentAdorner != null)
+                _parentAdorner.Visibility = Visibility.Visible;
+        }
+
+        private void ShowColorUnChecked(object sender, RoutedEventArgs e)
+        {
+            if (ColorImage != null)
+                ColorImage.Visibility = Visibility.Hidden;
+        }
+
+        private void ShowFaceUnChecked(object sender, RoutedEventArgs e)
+        {
+            if (_parentAdorner != null)
+                _parentAdorner.Visibility = Visibility.Hidden;
         }
     }
 }

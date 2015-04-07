@@ -2,23 +2,87 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Emotions"
-        Title="MainWindow" Height="420" Width="787" Closed="WindowClosed">
+        Title="Emotions" Height="434" Width="812" Closed="WindowClosed">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Black">
-            <Viewbox Stretch="Uniform">
-                <local:KinectViewer x:Name="Viewer" Width="640" Height="480"/>
-            </Viewbox>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <local:KinectViewer x:Name="Viewer"/>
         </Grid>
-        <ListBox Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemsSource="{Binding AUCoeffs}" Margin="2">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:RangedProperty Caption="{Binding Name}" Value="{Binding Value}" Min="-1" Max="1" DoubleSisded="True"/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+            <CheckBox IsChecked="{Binding RTAUTracking}" Content="Realtime AU tracking"  Margin="2"/>
+            <Expander Header="Face Transform" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="1">X</Label>
+                    <Label Grid.Row="0" Grid.Column="2">Y</Label>
+                    <Label Grid.Row="0" Grid.Column="3">Z</Label>
+                    <Label Grid.Row="1" Grid.Column="0">Position</Label>
+                    <Label Grid.Row="1" Grid.Column="1" x:Name="PosXLabel">-</Label>
+                    <Label Grid.Row="1" Grid.Column="2" x:Name="PosYLabel">-</Label>
+                    <Label Grid.Row="1" Grid.Column="3" x:Name="PosZLabel">-</Label>
+                    <Label Grid.Row="2" Grid.Column="0">Rotation</Label>
+                    <Label Grid.Row="2" Grid.Column="1" x:Name="RotXLabel">-</Label>
+                    <Label Grid.Row="2" Grid.Column="2" x:Name="RotYLabel">-</Label>
+                    <Label Grid.Row="2" Grid.Column="3" x:Name="RotZLabel">-</Label>
+                </Grid>
+            </Expander>
+            <Expander Header="Animation units" >
+                <StackPanel>
+                    <local:RangedProperty x:Name="AU1" Min="-1" Max="1" DoubleSisded="True"/>
+                    <local:RangedProperty x:Name="AU2" Min="-1" Max="1" DoubleSisded="True"/>
+                    <local:RangedProperty x:Name="AU3" Min="-1" Max="1" DoubleSisded="True"/>
+                    <local:RangedProperty x:Name="AU4" Min="-1" Max="1" DoubleSisded="True"/>
+                    <local:RangedProperty x:Name="AU5" Min="-1" Max="1" DoubleSisded="True"/>
+                    <local:RangedProperty x:Name="AU6" Min="-1" Max="1" DoubleSisded="True"/>
+                </StackPanel>
+            </Expander>
+            <Expander Header="Save as training record" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0">File</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1"  Text="{Binding TrainingDBFile}" VerticalAlignment="Center"/>
+                    
+                    <Label Grid.Row="1" Grid.Column="0">Emotion</Label>
+                    <ComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{Binding SelectedEmotion}" VerticalAlignment="Center">
+                        <!-- http://changingminds.org/explanations/emotions/basic%20emotions.htm -->
+                        <ComboBoxItem IsSelected="True">Neutral</ComboBoxItem>
+                        <ComboBoxItem>Love</ComboBoxItem>
+                        <ComboBoxItem>Joy</ComboBoxItem>
+                        <ComboBoxItem>Surprise</ComboBoxItem>
+                        <ComboBoxItem>Anger</ComboBoxItem>
+                        <ComboBoxItem>Sadness</ComboBoxItem>
+                        <ComboBoxItem>Fear</ComboBoxItem>
+                    </ComboBox>
+                    
+                    <Label Grid.Row="2" Grid.Column="0" >Comment</Label>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TrainingComment}" VerticalAlignment="Center" ></TextBox>
+
+                    <Button Grid.Row="3" Grid.Column="1" Click="OnTrainingRecordSave" VerticalAlignment="Center">Save</Button>
+                </Grid>
+            </Expander>
+        </StackPanel>
     </Grid>
 </Window>
