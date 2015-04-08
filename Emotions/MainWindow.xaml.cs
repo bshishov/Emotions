@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Kinect;
@@ -112,6 +110,7 @@ namespace Emotions
 
         private int _frameNum = 0;
         private int _frameSkip = 15;
+        private EmotionRecognizer _recognizer;
 
         private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame)
         {
@@ -138,6 +137,17 @@ namespace Emotions
             RotXLabel.Content = frame.Rotation.X;
             RotYLabel.Content = frame.Rotation.Y;
             RotZLabel.Content = frame.Rotation.Z;
+
+            if (_recognizer != null)
+            {
+                var ausDouble = new double[] {au[0], au[1], au[2], au[3], au[4], au[5]};
+                NeutralEmotion.Value =  _recognizer.Compute(EmotionType.Neutral, ausDouble);
+                JoyEmotion.Value =      _recognizer.Compute(EmotionType.Joy, ausDouble);
+                SurpriseEmotion.Value = _recognizer.Compute(EmotionType.Surprise, ausDouble);
+                AngerEmotion.Value =    _recognizer.Compute(EmotionType.Anger, ausDouble);
+                FearEmotion.Value =     _recognizer.Compute(EmotionType.Fear, ausDouble);
+                SadnessEmotion.Value =  _recognizer.Compute(EmotionType.Sadness, ausDouble);
+            }
         }
 
         private void WindowClosed(object sender, EventArgs e)
@@ -159,8 +169,14 @@ namespace Emotions
             if(_lastFrame == null)
                 return;
 
-            _trainingData.Rows.Add(new TrainingDataSet.TrainingDataRow((string)SelectedEmotion.Content, TrainingComment, _lastFrame));
+            var t = (EmotionType) System.Enum.Parse(typeof (EmotionType), SelectedEmotion.Content.ToString());
+            _trainingData.Rows.Add(new TrainingDataSet.TrainingDataRow(t, TrainingComment, _lastFrame));
             _trainingData.ToFile(TrainingDBFile);
+        }
+
+        private void OnTrain(object sender, RoutedEventArgs e)
+        {
+            _recognizer = new EmotionRecognizer(_trainingData);
         }
     }
 

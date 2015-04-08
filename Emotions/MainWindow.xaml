@@ -50,13 +50,14 @@
                     <local:RangedProperty x:Name="AU6" Min="-1" Max="1" DoubleSisded="True"/>
                 </StackPanel>
             </Expander>
-            <Expander Header="Save as training record" >
+            <Expander Header="Training" >
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
@@ -69,7 +70,6 @@
                     <ComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{Binding SelectedEmotion}" VerticalAlignment="Center">
                         <!-- http://changingminds.org/explanations/emotions/basic%20emotions.htm -->
                         <ComboBoxItem IsSelected="True">Neutral</ComboBoxItem>
-                        <ComboBoxItem>Love</ComboBoxItem>
                         <ComboBoxItem>Joy</ComboBoxItem>
                         <ComboBoxItem>Surprise</ComboBoxItem>
                         <ComboBoxItem>Anger</ComboBoxItem>
@@ -81,7 +81,18 @@
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TrainingComment}" VerticalAlignment="Center" ></TextBox>
 
                     <Button Grid.Row="3" Grid.Column="1" Click="OnTrainingRecordSave" VerticalAlignment="Center">Save</Button>
+                    <Button Grid.Row="4" Grid.Column="1" Click="OnTrain" VerticalAlignment="Center">Train</Button>
                 </Grid>
+            </Expander>
+            <Expander Header="Recognizing" >
+                <StackPanel>
+                    <local:RangedProperty Caption="Neutral"     x:Name="NeutralEmotion"     Min="0" Max="1"/>
+                    <local:RangedProperty Caption="Joy"         x:Name="JoyEmotion"         Min="0" Max="1"/>
+                    <local:RangedProperty Caption="Surprise"    x:Name="SurpriseEmotion"    Min="0" Max="1"/>
+                    <local:RangedProperty Caption="Anger"       x:Name="AngerEmotion"       Min="0" Max="1"/>
+                    <local:RangedProperty Caption="Sadness"     x:Name="SadnessEmotion"     Min="0" Max="1"/>
+                    <local:RangedProperty Caption="Fear"        x:Name="FearEmotion"        Min="0" Max="1"/>
+                </StackPanel>
             </Expander>
         </StackPanel>
     </Grid>

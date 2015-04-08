@@ -17,16 +17,16 @@ namespace Emotions
 
         public class TrainingDataRow
         {
-            public string Emotion;
+            public EmotionType EmotionType;
             public string Comment;
             public List<float> AUs;
             public DateTime DateTime;
 
             public TrainingDataRow() { }
 
-            public TrainingDataRow(string emotion, string comment, FaceTrackFrame frame)
+            public TrainingDataRow(EmotionType emotionType, string comment, FaceTrackFrame frame)
             {
-                Emotion = emotion;
+                EmotionType = emotionType;
                 Comment = comment;
                 AUs = new List<float>();
                 var aus = frame.GetAnimationUnitCoefficients();
