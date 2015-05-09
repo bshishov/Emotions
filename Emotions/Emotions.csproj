@@ -70,14 +70,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="EmotionRecognizer.cs" />
+    <Compile Include="EventExtensions.cs" />
     <Compile Include="FaceDetector.cs" />
     <Compile Include="FaceDrawer.cs" />
-    <Compile Include="RangedProperty.xaml.cs">
+    <Compile Include="Controls\RangedProperty.xaml.cs">
       <DependentUpon>RangedProperty.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InputSnapshot.cs" />
+    <Compile Include="Recording.cs" />
     <Compile Include="SkeletonFaceTracker.cs" />
+    <Compile Include="Engine.cs" />
     <Compile Include="TrainingDataSet.cs" />
-    <Page Include="KinectViewer.xaml">
+    <Page Include="Controls\KinectViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -89,14 +93,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="KinectViewer.xaml.cs">
+    <Compile Include="Controls\KinectViewer.xaml.cs">
       <DependentUpon>KinectViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="RangedProperty.xaml">
+    <Page Include="Controls\RangedProperty.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

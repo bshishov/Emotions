@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Emotions
 {
@@ -10,9 +12,77 @@ namespace Emotions
     /// </summary>
     public partial class RangedProperty : UserControl
     {
+        class TimeLineDrawer
+        {
+            public WriteableBitmap Output { get { return _output; } }
+
+            private WriteableBitmap _output;
+            private const int Height = 100;
+            private const int Width = 100;
+            private int bytesPerPixel;
+            private int stride;
+            private int arraySize;
+            private byte[] colorArray;
+            private Int32Rect rect;
+            private Random _random;
+
+            public TimeLineDrawer()
+            {
+                _output = new WriteableBitmap(Width, Height, 96, 96, PixelFormats.Bgr32, null);
+                bytesPerPixel = (_output.Format.BitsPerPixel + 7) / 8;
+                stride = _output.PixelWidth * bytesPerPixel;
+                arraySize = stride * _output.PixelHeight;
+                colorArray = new byte[arraySize];
+                for (var i = 0; i < arraySize; i++)
+                    colorArray[i] = 255;
+                rect = new Int32Rect(0, 0, _output.PixelWidth, _output.PixelHeight);
+                _random = new Random();
+            }
+
+            public void Update(double value)
+            {
+                //Shift
+                for (var i = 0; i < Width - 1; i++)
+                    for (var j = 0; j < Height; j++)
+                    {
+                        colorArray[(i * Height + j)*bytesPerPixel + 0] =
+                            colorArray[(i * Height + j + 1) * bytesPerPixel + 0];
+
+                        colorArray[(i * Height + j) * bytesPerPixel + 1] =
+                            colorArray[(i * Height + j + 1) * bytesPerPixel + 1];
+
+                        colorArray[(i * Height + j) * bytesPerPixel + 2] =
+                            colorArray[(i * Height + j + 1) * bytesPerPixel + 2];
+
+                        colorArray[(i * Height + j) * bytesPerPixel + 3] =
+                            colorArray[(i * Height + j + 1) * bytesPerPixel + 3];
+                    }
+
+                var lastCol = Width - 1;
+                
+                var pixelHeight = (int)Math.Floor((1 - value) * Height);
+                for (var j = pixelHeight; j < Height; j++)
+                {
+                    colorArray[GetOffset(j, lastCol) + 0] = 0;
+                    colorArray[GetOffset(j, lastCol) + 1] = 150;
+                    colorArray[GetOffset(j, lastCol) + 2] = 0;
+                    colorArray[GetOffset(j, lastCol) + 3] = 255;
+                }
+
+                _output.WritePixels(rect, colorArray, stride, 0);
+            }
+
+            private int GetOffset(int row, int col)
+            {
+                return (row * Height + col) * bytesPerPixel;
+            }
+        }
+
         public static readonly DependencyProperty CaptionProperty = DependencyProperty.Register("Caption",
             typeof(string), typeof(RangedProperty), new PropertyMetadata(
                 default(string), (o, args) => ((RangedProperty) o).OnCaptionChanged((string) args.OldValue, (string) args.NewValue)));
+
+        private readonly TimeLineDrawer _timeLineDrawer;
 
         private void OnCaptionChanged(string oldValue, string newValue)
         {
@@ -44,6 +114,8 @@ namespace Emotions
         public static readonly DependencyProperty DoubleSidedProperty = DependencyProperty.Register("DoubleSided", typeof(bool), typeof(RangedProperty), new PropertyMetadata(
                 default(bool), (o, args) => ((RangedProperty)o).OnDoubleSidedChanged((bool)args.OldValue, (bool)args.NewValue)));
 
+        private double _value;
+
         private void OnDoubleSidedChanged(bool oldValue, bool newValue)
         {
             if (newValue)
@@ -52,18 +124,26 @@ namespace Emotions
                 ValueRect.Margin = new Thickness(margin.Left,margin.Top, this.ActualWidth / 2, margin.Bottom);
             }
         }
-
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-            "Value",
-            typeof(double),
-            typeof(RangedProperty),
-            new PropertyMetadata(
-                default(double), (o, args) => ((RangedProperty)o).OnValueChanged((double)args.OldValue, (double)args.NewValue)));
-
+        
         private void OnValueChanged(double oldValue, double newValue)
         {
             ValueLabel.Content = String.Format("{0:0.####}", newValue);
+            UpdateTimeLine(newValue);
             UpdateValueRect();
+        }
+
+        public void SetValue(double value)
+        {
+            Value = value;
+            ValueLabel.Content = String.Format("{0:0.####}", value);
+            UpdateTimeLine(value);
+            UpdateValueRect();
+        }
+
+        private void UpdateTimeLine(double value)
+        {
+            _timeLineDrawer.Update((value - Min) / (Max - Min));
+            TimeLineImage.Source = _timeLineDrawer.Output;
         }
 
         public String Caption
@@ -74,8 +154,13 @@ namespace Emotions
 
         public double Value
         {
-            get { return (double)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get { return _value; }
+            set
+            {
+                var old = _value;
+                _value = value;
+                OnValueChanged(old, value);
+            }
         }
 
         public double Min
@@ -99,6 +184,7 @@ namespace Emotions
         public RangedProperty()
         {
             InitializeComponent();
+            _timeLineDrawer = new TimeLineDrawer();
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)

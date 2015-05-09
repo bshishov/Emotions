@@ -15,6 +15,7 @@ namespace Emotions
         private KinectSensor _sensor;
         private FaceDetector _tracker;
         private TrainingDataSet _trainingData;
+        private Engine _engine;
         private FaceTrackFrame _lastFrame;
         
         public ComboBoxItem SelectedEmotion { get; set; }
@@ -94,6 +95,33 @@ namespace Emotions
             _tracker = new FaceDetector(_sensor);
             _tracker.SkeletonTracked += TrackerOnSkeletonTracked;
             _tracker.SkeletonUnTracked += TrackerOnSkeletonUnTracked;
+
+            _engine = new Engine();
+            _engine.OnUpdate += EngineOnOnUpdate;
+            _engine.Start();
+        }
+        private void EngineOnOnUpdate(object sender, Engine.UpdateEventArgs args)
+        {
+            this.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), args.Snapshot);
+        }
+
+        public delegate void UpdateUICallback(InputSnapshot buffer);
+        private void UpdateUI(InputSnapshot buffer)
+        {
+            AU1.Value = buffer.AU1;
+            AU2.Value = buffer.AU2;
+            AU3.Value = buffer.AU3;
+            AU4.Value = buffer.AU4;
+            AU5.Value = buffer.AU5;
+            AU6.Value = buffer.AU6;
+
+            PosXLabel.Content = buffer.FacePosition.X;
+            PosYLabel.Content = buffer.FacePosition.Y;
+            PosZLabel.Content = buffer.FacePosition.Z;
+
+            RotXLabel.Content = buffer.FaceRotation.X;
+            RotYLabel.Content = buffer.FaceRotation.Y;
+            RotZLabel.Content = buffer.FaceRotation.Z;
         }
 
         private void TrackerOnSkeletonUnTracked(object sender, SkeletonTrackArgs args)
@@ -107,51 +135,41 @@ namespace Emotions
             Viewer.TrackSkeleton(args.SkeletonFaceTracker);
             args.SkeletonFaceTracker.TrackSucceed += SkeletonFaceTrackerOnTrackSucceed;
         }
-
-        private int _frameNum = 0;
-        private int _frameSkip = 15;
-        private EmotionRecognizer _recognizer;
-
+        
         private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame)
         {
             _lastFrame = frame;
             if(!RTAUTracking)
                 return;
-            if (_frameNum++ < _frameSkip)
-                return;
-            
-            _frameNum = 0;
             
             var au = frame.GetAnimationUnitCoefficients();
-            AU1.Value = au[0];
-            AU2.Value = au[1];
-            AU3.Value = au[2];
-            AU4.Value = au[3];
-            AU5.Value = au[4];
-            AU6.Value = au[5];
-
-            PosXLabel.Content = frame.Translation.X;
-            PosYLabel.Content = frame.Translation.Y;
-            PosZLabel.Content = frame.Translation.Z;
-
-            RotXLabel.Content = frame.Rotation.X;
-            RotYLabel.Content = frame.Rotation.Y;
-            RotZLabel.Content = frame.Rotation.Z;
-
-            if (_recognizer != null)
+            var snapshot = new InputSnapshot()
             {
-                var ausDouble = new double[] {au[0], au[1], au[2], au[3], au[4], au[5]};
-                NeutralEmotion.Value =  _recognizer.Compute(EmotionType.Neutral, ausDouble);
-                JoyEmotion.Value =      _recognizer.Compute(EmotionType.Joy, ausDouble);
-                SurpriseEmotion.Value = _recognizer.Compute(EmotionType.Surprise, ausDouble);
-                AngerEmotion.Value =    _recognizer.Compute(EmotionType.Anger, ausDouble);
-                FearEmotion.Value =     _recognizer.Compute(EmotionType.Fear, ausDouble);
-                SadnessEmotion.Value =  _recognizer.Compute(EmotionType.Sadness, ausDouble);
-            }
+                AU1 = au[0],
+                AU2 = au[1],
+                AU3 = au[2],
+                AU4 = au[3],
+                AU5 = au[4],
+                AU6 = au[5],
+                FacePosition = new InputSnapshot.Point3()
+                {
+                    X = frame.Translation.X,
+                    Y = frame.Translation.Y,
+                    Z = frame.Translation.Z,
+                },
+                FaceRotation = new InputSnapshot.Point3()
+                {
+                    X = frame.Rotation.X,
+                    Y = frame.Rotation.Y,
+                    Z = frame.Rotation.Z,
+                },
+            };
+            _engine.ProceedInput(snapshot);
         }
 
         private void WindowClosed(object sender, EventArgs e)
         {
+            _engine.Stop();
             _tracker.Dispose();
             _sensor.Stop();
         }
@@ -176,13 +194,8 @@ namespace Emotions
 
         private void OnTrain(object sender, RoutedEventArgs e)
         {
-            _recognizer = new EmotionRecognizer(_trainingData);
+            /*
+            _recognizer = new EmotionRecognizer(_trainingData);*/
         }
-    }
-
-    public class AUCoeffDesc
-    {
-        public string Name { get; set; }
-        public double Value { get; set; }
     }
 }
