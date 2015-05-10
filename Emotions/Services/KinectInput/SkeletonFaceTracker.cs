@@ -31,19 +31,19 @@ namespace Emotions.Services.KinectInput
         /// </summary>
         internal void OnFrameReady(KinectSensor kinectSensor, ColorImageFormat colorImageFormat, byte[] colorImage, DepthImageFormat depthImageFormat, short[] depthImage, Skeleton skeletonOfInterest)
         {
-            this._skeletonTrackingState = skeletonOfInterest.TrackingState;
+            _skeletonTrackingState = skeletonOfInterest.TrackingState;
 
-            if (this._skeletonTrackingState != SkeletonTrackingState.Tracked)
+            if (_skeletonTrackingState != SkeletonTrackingState.Tracked)
             {
                 // nothing to do with an untracked skeleton.
                 return;
             }
 
-            if (this._faceTracker == null)
+            if (_faceTracker == null)
             {
                 try
                 {
-                    this._faceTracker = new FaceTracker(kinectSensor);
+                    _faceTracker = new FaceTracker(kinectSensor);
                 }
                 catch (InvalidOperationException)
                 {
@@ -51,7 +51,7 @@ namespace Emotions.Services.KinectInput
                     // is unable to be instantiated.  Catch that exception
                     // and don't track a face.
                     Debug.WriteLine("AllFramesReady - creating a new FaceTracker threw an InvalidOperationException");
-                    this._faceTracker = null;
+                    _faceTracker = null;
                 }
             }
 
@@ -62,7 +62,7 @@ namespace Emotions.Services.KinectInput
                 if (_lastFaceTrackSucceeded)
                 {
                     if (TrackSucceed != null)
-                        TrackSucceed(this, frame);
+                        TrackSucceed(this, frame, skeletonOfInterest);
                 }
             }
         }
@@ -70,5 +70,5 @@ namespace Emotions.Services.KinectInput
         
     }
 
-    public delegate void TrackEvent(object sender, FaceTrackFrame frame);
+    public delegate void TrackEvent(object sender, FaceTrackFrame frame, Skeleton skeleton);
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Caliburn.Micro;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
@@ -110,7 +111,7 @@ namespace Emotions.Services.KinectInput
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="faceFrame">Face frame</param>
-        void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame faceFrame)
+        void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame faceFrame, Skeleton skeleton)
         {
             var au = faceFrame.GetAnimationUnitCoefficients();
             var featurepoints = faceFrame.Get3DShape();

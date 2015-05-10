@@ -8,13 +8,13 @@ using Emotions.Services.Engine;
 
 namespace Emotions.Utilities
 {
-    class EngineFaceDrawer : Adorner, IDisposable
+    class EngineDrawer : Adorner, IDisposable
     {
         private Frame _frame;
         private readonly Brush _brush = Brushes.Red;
         private readonly Pen _pen = new Pen(Brushes.Red, 1);
 
-        public EngineFaceDrawer(UIElement adornedElement) : base(adornedElement)
+        public EngineDrawer(UIElement adornedElement) : base(adornedElement)
         {
             IoC.Get<IEngineService>().OnUpdate += EngineOnOnUpdate;
         }

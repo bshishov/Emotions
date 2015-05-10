@@ -36,13 +36,13 @@ namespace Emotions
         private byte[] _colorImageData;
         private WriteableBitmap _colorImageWritableBitmap;
         private AdornerLayer _parentAdorner;
-        private List<FaceDrawer> _drawers = new List<FaceDrawer>();
+        private List<KinectDrawer> _drawers = new List<KinectDrawer>();
 
         public KinectViewer()
         {
             InitializeComponent();
             _parentAdorner = AdornerLayer.GetAdornerLayer(ColorImage);
-            _parentAdorner.Add(new EngineFaceDrawer(ColorImage));
+            _parentAdorner.Add(new EngineDrawer(ColorImage));
             ColorImage.Source = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgr32, null);
         }
 
@@ -91,7 +91,7 @@ namespace Emotions
 
         public void TrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)
         {
-            var drawer = new FaceDrawer(ColorImage, skeletonFaceTracker);
+            var drawer = new KinectDrawer(ColorImage, skeletonFaceTracker);
             _drawers.Add(drawer);
             _parentAdorner.Add(drawer);
         }

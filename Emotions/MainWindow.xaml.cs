@@ -139,7 +139,7 @@ namespace Emotions
             args.SkeletonFaceTracker.TrackSucceed += SkeletonFaceTrackerOnTrackSucceed;
         }
         
-        private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame)
+        private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame, Skeleton skeleton)
         {
             _lastFrame = frame;
             if(!RTAUTracking)
