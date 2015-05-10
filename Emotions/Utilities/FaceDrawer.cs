@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Emotions.Services.KinectInput;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using Point = System.Windows.Point;
 
-namespace Emotions
+namespace Emotions.Utilities
 {
     public class FaceDrawer : Adorner, IDisposable
     {
@@ -54,7 +54,6 @@ namespace Emotions
                 drawingContext.DrawGeometry(_brush, _pen, faceModelGroup);
             }
 
-           
             base.OnRender(drawingContext);
         }
         

@@ -2,8 +2,11 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using Emotions.Services.Engine;
+using Emotions.Services.KinectInput;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
+using Frame = Emotions.Services.Engine.Frame;
 
 namespace Emotions
 {
@@ -100,13 +103,13 @@ namespace Emotions
             _engine.OnUpdate += EngineOnOnUpdate;
             _engine.Start();
         }
-        private void EngineOnOnUpdate(object sender, Engine.UpdateEventArgs args)
+        private void EngineOnOnUpdate(object sender, EngineUpdateEventArgs args)
         {
-            this.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), args.Snapshot);
+            this.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), args.Frame);
         }
 
-        public delegate void UpdateUICallback(InputSnapshot buffer);
-        private void UpdateUI(InputSnapshot buffer)
+        public delegate void UpdateUICallback(Frame buffer);
+        private void UpdateUI(Frame buffer)
         {
             AU1.Value = buffer.AU1;
             AU2.Value = buffer.AU2;
@@ -143,7 +146,7 @@ namespace Emotions
                 return;
             
             var au = frame.GetAnimationUnitCoefficients();
-            var snapshot = new InputSnapshot()
+            var snapshot = new Frame()
             {
                 AU1 = au[0],
                 AU2 = au[1],
@@ -151,13 +154,13 @@ namespace Emotions
                 AU4 = au[3],
                 AU5 = au[4],
                 AU6 = au[5],
-                FacePosition = new InputSnapshot.Point3()
+                FacePosition = new Frame.Point3()
                 {
                     X = frame.Translation.X,
                     Y = frame.Translation.Y,
                     Z = frame.Translation.Z,
                 },
-                FaceRotation = new InputSnapshot.Point3()
+                FaceRotation = new Frame.Point3()
                 {
                     X = frame.Rotation.X,
                     Y = frame.Rotation.Y,

@@ -17,14 +17,17 @@ namespace Emotions
             public WriteableBitmap Output { get { return _output; } }
 
             private WriteableBitmap _output;
-            private const int Height = 100;
-            private const int Width = 100;
+            private const int Height = 200;
+            private const int Width = 200;
             private int bytesPerPixel;
             private int stride;
             private int arraySize;
             private byte[] colorArray;
             private Int32Rect rect;
-            private Random _random;
+            private Color PositiveColor = Colors.MediumSeaGreen;
+            private Color NegativeColor = Colors.MediumSeaGreen;
+            private Color PositiveBackground = Colors.White;
+            private Color NegativeBackground = Colors.LightGray;
 
             public TimeLineDrawer()
             {
@@ -36,7 +39,6 @@ namespace Emotions
                 for (var i = 0; i < arraySize; i++)
                     colorArray[i] = 255;
                 rect = new Int32Rect(0, 0, _output.PixelWidth, _output.PixelHeight);
-                _random = new Random();
             }
 
             public void Update(double value)
@@ -59,14 +61,35 @@ namespace Emotions
                     }
 
                 var lastCol = Width - 1;
-                
-                var pixelHeight = (int)Math.Floor((1 - value) * Height);
-                for (var j = pixelHeight; j < Height; j++)
+                var pixelHeight = (int)((1 - value) * Height);
+                var halfHeight = Height/2;
+
+                for (var j = 0; j < halfHeight; j++)
                 {
-                    colorArray[GetOffset(j, lastCol) + 0] = 0;
-                    colorArray[GetOffset(j, lastCol) + 1] = 150;
-                    colorArray[GetOffset(j, lastCol) + 2] = 0;
-                    colorArray[GetOffset(j, lastCol) + 3] = 255;
+                    colorArray[GetOffset(j, lastCol) + 0] = PositiveBackground.R;
+                    colorArray[GetOffset(j, lastCol) + 1] = PositiveBackground.G;
+                    colorArray[GetOffset(j, lastCol) + 2] = PositiveBackground.B;
+
+                    if (j > pixelHeight)
+                    {
+                        colorArray[GetOffset(j, lastCol) + 0] = PositiveColor.R;
+                        colorArray[GetOffset(j, lastCol) + 1] = PositiveColor.G;
+                        colorArray[GetOffset(j, lastCol) + 2] = PositiveColor.B;
+                    }
+                }
+
+                for (var j = halfHeight; j < Height; j++)
+                {
+                    colorArray[GetOffset(j, lastCol) + 0] = NegativeBackground.R;
+                    colorArray[GetOffset(j, lastCol) + 1] = NegativeBackground.G;
+                    colorArray[GetOffset(j, lastCol) + 2] = NegativeBackground.B;
+
+                    if (j < pixelHeight)
+                    {
+                        colorArray[GetOffset(j, lastCol) + 0] = NegativeColor.R;
+                        colorArray[GetOffset(j, lastCol) + 1] = NegativeColor.G;
+                        colorArray[GetOffset(j, lastCol) + 2] = NegativeColor.B;
+                    }
                 }
 
                 _output.WritePixels(rect, colorArray, stride, 0);
@@ -128,23 +151,10 @@ namespace Emotions
         private void OnValueChanged(double oldValue, double newValue)
         {
             ValueLabel.Content = String.Format("{0:0.####}", newValue);
-            UpdateTimeLine(newValue);
+            _timeLineDrawer.Update((newValue - Min) / (Max - Min));
             UpdateValueRect();
         }
 
-        public void SetValue(double value)
-        {
-            Value = value;
-            ValueLabel.Content = String.Format("{0:0.####}", value);
-            UpdateTimeLine(value);
-            UpdateValueRect();
-        }
-
-        private void UpdateTimeLine(double value)
-        {
-            _timeLineDrawer.Update((value - Min) / (Max - Min));
-            TimeLineImage.Source = _timeLineDrawer.Output;
-        }
 
         public String Caption
         {
@@ -185,6 +195,7 @@ namespace Emotions
         {
             InitializeComponent();
             _timeLineDrawer = new TimeLineDrawer();
+            TimeLineImage.Source = _timeLineDrawer.Output;
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)

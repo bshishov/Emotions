@@ -1,11 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using AForge.Neuro;
 using AForge.Neuro.Learning;
 
-namespace Emotions
+namespace Emotions.Services.Engine
 {
     enum EmotionType
     {

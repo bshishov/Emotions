@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="Emotions.Views.AUView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:emotions="clr-namespace:Emotions"
+             mc:Ignorable="d" 
+             d:DesignWidth="300">
+    <Grid VerticalAlignment="Stretch" Background="White">
+        <StackPanel>
+            <emotions:RangedProperty x:Name="AU1" Min="-1" Max="1" DoubleSisded="True"/>
+            <emotions:RangedProperty x:Name="AU2" Min="-1" Max="1" DoubleSisded="True"/>
+            <emotions:RangedProperty x:Name="AU3" Min="-1" Max="1" DoubleSisded="True"/>
+            <emotions:RangedProperty x:Name="AU4" Min="-1" Max="1" DoubleSisded="True"/>
+            <emotions:RangedProperty x:Name="AU5" Min="-1" Max="1" DoubleSisded="True"/>
+            <emotions:RangedProperty x:Name="AU6" Min="-1" Max="1" DoubleSisded="True"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using Newtonsoft.Json;
 
-namespace Emotions
+namespace Emotions.Services.Engine
 {
     class TrainingDataSet
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Kinect;
 
-namespace Emotions
+namespace Emotions.Services.KinectInput
 {
     internal class FaceDetector : IDisposable
     {

@@ -1,8 +1,25 @@
-﻿<Application x:Class="Emotions.App"
+﻿<!--<Application x:Class="Emotions.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
+    </Application.Resources>
+</Application>-->
+<Application x:Class="Gemini.Demo.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             xmlns:gemini="http://schemas.timjones.tw/gemini"
+             xmlns:neuralNetworkTestUi="clr-namespace:Emotions">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <!--<gemini:AppBootstrapper x:Key="bootstrapper" /> -->
+                    <!--<neuralNetworkTestUi:MyAppBootstrapper x:Key="bootstrapper" /> -->
+                    <gemini:AppBootstrapper x:Key="bootstrapper" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

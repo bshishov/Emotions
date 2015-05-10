@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
-namespace Emotions
+namespace Emotions.Services.KinectInput
 {
     public class SkeletonFaceTracker : IDisposable
     {

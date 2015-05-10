@@ -6,6 +6,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Emotions.Services.KinectInput;
+using Emotions.Utilities;
 using Microsoft.Kinect;
 using Rect = System.Windows.Rect;
 
@@ -40,6 +42,8 @@ namespace Emotions
         {
             InitializeComponent();
             _parentAdorner = AdornerLayer.GetAdornerLayer(ColorImage);
+            _parentAdorner.Add(new EngineFaceDrawer(ColorImage));
+            ColorImage.Source = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgr32, null);
         }
 
         private void OnSensorChanged(KinectSensor oldSensor, KinectSensor newSensor)

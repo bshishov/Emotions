@@ -13,6 +13,11 @@
         </Grid>
         <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
             <CheckBox IsChecked="{Binding RTAUTracking}" Content="Realtime AU tracking"  Margin="2"/>
+            <StackPanel Orientation="Horizontal">
+                <ToggleButton x:Name="RTButton">Real Time</ToggleButton>
+                <ToggleButton x:Name="RecButton">Record</ToggleButton>
+                <ToggleButton x:Name="PlayButton">Play</ToggleButton>
+            </StackPanel>
             <Expander Header="Face Transform" >
                 <Grid>
                     <Grid.RowDefinitions>
