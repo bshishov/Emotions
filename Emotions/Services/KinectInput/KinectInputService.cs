@@ -49,7 +49,7 @@ namespace Emotions.Services.KinectInput
         {
             if (e.OldSource != null)
             {
-                //e.OldSource.Stop();
+                e.OldSource.Stop();
             }
 
             if (e.NewSource != null)

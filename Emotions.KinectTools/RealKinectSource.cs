@@ -33,7 +33,8 @@ namespace Emotions.KinectTools
             if (_sensor == null)
                 throw new Exception("No sensor");
             
-            _sensor.Stop();
+            // Don't shutdown the sensor
+            // _sensor.Stop();
         }
 
         public RealKinectSource()
