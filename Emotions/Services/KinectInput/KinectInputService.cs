@@ -1,89 +1,75 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.Linq;
+using System.IO;
 using Caliburn.Micro;
+using Emotions.KinectTools;
+using Emotions.ViewModels;
+using Gemini.Framework;
+using Gemini.Framework.Services;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using Emotions.Services.Engine;
 
 namespace Emotions.Services.KinectInput
 {
+    [Export(typeof(IEditorProvider))]
     [Export(typeof(IKinectInputService))]
-    class KinectInputService : IKinectInputService
+    class KinectInputService : IKinectInputService, IEditorProvider
     {
         private IEngineService _engine;
         private readonly ILog _log = LogManager.GetLog(typeof(KinectInputService));
-        private KinectSensor _sensor;
-        private FaceDetector _tracker;
+        private SkeletonTracker _tracker;
         private KinectViewer _viewer;
-        private Frame.Point3[] _points;
+        private IKinectSource _kinectSource;
 
         public KinectInputService()
         {
-            if (KinectSensor.KinectSensors.Count > 0)
-            {
-                _sensor = KinectSensor.KinectSensors[0];
-                try
-                {
-                    InitSensor();
-                }
-                catch (Exception ex)
-                {
-                    _log.Error(ex);
-                }
-                _engine = IoC.Get<IEngineService>();       
-                _engine.Start();
-            }
-            else
-            {
-                _log.Warn("No kinect sensor detected");
-                _log.Warn("Running without sensor");
-                _engine = IoC.Get<IEngineService>(); 
-            }
+            _engine = IoC.Get<IEngineService>();
+            SourceChanged += OnSourceChanged;
+            LoadRealKinect();
         }
 
-        public void InitSensor()
+        public void LoadRealKinect()
         {
             try
             {
-                _sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-                _sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
-                try
+                var source = new RealKinectSource();
+                _log.Info("Sensor initialized");
+                ActiveSource = source;
+            }
+            catch (Exception ex)
+            {
+                _log.Warn("Failed to initialize kinect");
+                _log.Error(ex);
+                _log.Warn("Running without sensor");
+            }
+        }
+
+        private void OnSourceChanged(object sender, SourceChangedArgs e)
+        {
+            if (e.OldSource != null)
+            {
+                //e.OldSource.Stop();
+            }
+
+            if (e.NewSource != null)
+            {
+                _log.Info("New kinect source: {0}", e.NewSource);
+                _engine.Start();
+
+                if (_tracker != null)
                 {
-                    // This will throw on non Kinect For Windows devices.
-                    _sensor.DepthStream.Range = DepthRange.Near;
-                    _sensor.SkeletonStream.EnableTrackingInNearRange = true;
-                }
-                catch (InvalidOperationException)
-                {
-                    _log.Warn("Failed to init near range sensor. Falling back to deafult range");
-                    _sensor.DepthStream.Range = DepthRange.Default;
-                    _sensor.SkeletonStream.EnableTrackingInNearRange = false;
+                    _tracker.SkeletonTracked -= TrackerOnSkeletonTracked;
+                    _tracker.SkeletonUnTracked -= TrackerOnSkeletonUnTracked;
+                    _tracker.Dispose();
                 }
 
-                _sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-                _sensor.SkeletonStream.Enable();
-                _log.Info("Sensor initialized");
+                _tracker = new SkeletonTracker(_kinectSource);
+                _tracker.SkeletonTracked += TrackerOnSkeletonTracked;
+                _tracker.SkeletonUnTracked += TrackerOnSkeletonUnTracked;
+
+                _viewer.Kinect = _kinectSource;
             }
-            catch (InvalidOperationException ex)
-            {
-                // This exception can be thrown when we are trying to
-                // enable streams on a device that has gone away.  This
-                // can occur, say, in app shutdown scenarios when the sensor
-                // goes away between the time it changed status and the
-                // time we get the sensor changed notification.
-                //
-                // Behavior here is to just eat the exception and assume
-                // another notification will come along if a sensor
-                // comes back.
-                _log.Error(ex);
-                throw;
-            }
-            
-            _sensor.Start();
-            _tracker = new FaceDetector(_sensor);
-            _tracker.SkeletonTracked += TrackerOnSkeletonTracked;
-            _tracker.SkeletonUnTracked += TrackerOnSkeletonUnTracked;
         }
 
         void TrackerOnSkeletonTracked(object sender, SkeletonTrackArgs args)
@@ -129,12 +115,12 @@ namespace Emotions.Services.KinectInput
             var frame = new Frame()
             {
                 FeaturePoints = points,
-                AU1 = au[0],
-                AU2 = au[1],
-                AU3 = au[2],
-                AU4 = au[3],
-                AU5 = au[4],
-                AU6 = au[5],
+                LipRaiser = au[AnimationUnit.LipRaiser],
+                JawLowerer = au[AnimationUnit.JawLower],
+                LipStretcher = au[AnimationUnit.LipStretcher],
+                BrowLowerer = au[AnimationUnit.BrowLower],
+                LipCornerDepressor = au[AnimationUnit.LipCornerDepressor],
+                BrowRaiser = au[AnimationUnit.BrowRaiser],
                 FacePosition = new Frame.Point3()
                 {
                     X = faceFrame.Translation.X,
@@ -150,19 +136,68 @@ namespace Emotions.Services.KinectInput
             };
             _engine.ProceedInput(frame);
         }
-        
+
+        public event EventHandler<SourceChangedArgs> SourceChanged;
+
+        public IKinectSource ActiveSource
+        {
+            get { return _kinectSource; }
+            private set
+            {
+                var old = _kinectSource;
+                _kinectSource = value;
+                
+                if (SourceChanged != null)
+                    SourceChanged(this, new SourceChangedArgs(old, value));
+            }
+        }
+
         public void Dispose()
         {
             _engine.Stop();
             _tracker.Dispose();
-            _sensor.Stop();
+            _kinectSource.Stop();
         }
 
         public void AttachViewer(KinectViewer viewer)
         {
             _log.Info("Viewer attached");
             _viewer = viewer;
-            _viewer.Kinect = _sensor;
+            _viewer.Kinect = ActiveSource;
+        }
+
+        public void LoadRecording(string path)
+        {
+            try
+            {
+                _log.Info("Loading recording {0}", path);
+                var source = new KinectPlayer(path);
+                source.PlaybackEnded += SourceOnPlaybackEnded;
+                source.Start();
+                ActiveSource = source;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+            }
+        }
+
+        private void SourceOnPlaybackEnded()
+        {
+            _log.Info("Playback ended");
+            _viewer.Dispatcher.Invoke(LoadRealKinect);
+        }
+
+        public bool Handles(string path)
+        {
+            return true;
+        }
+
+        public IDocument Create(string path)
+        {
+            LoadRecording(path);
+            //return new KinectOutputViewModel();
+            return null;
         }
     }
 }

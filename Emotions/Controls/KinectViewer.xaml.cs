@@ -6,10 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Emotions.KinectTools;
 using Emotions.Services.KinectInput;
 using Emotions.Utilities;
 using Microsoft.Kinect;
-using Rect = System.Windows.Rect;
 
 namespace Emotions
 {
@@ -20,20 +20,19 @@ namespace Emotions
     {
         public static readonly DependencyProperty KinectProperty = DependencyProperty.Register(
             "Kinect",
-            typeof(KinectSensor),
+            typeof(IKinectSource),
             typeof(KinectViewer),
             new PropertyMetadata(
-                null, (o, args) => ((KinectViewer)o).OnSensorChanged((KinectSensor)args.OldValue, (KinectSensor)args.NewValue)));
+                null, (o, args) => ((KinectViewer)o).OnSensorChanged((IKinectSource)args.OldValue, (IKinectSource)args.NewValue)));
 
        
-        public KinectSensor Kinect
+        public IKinectSource Kinect
         {
-            get { return (KinectSensor) GetValue(KinectProperty); }
+            get { return (IKinectSource)GetValue(KinectProperty); }
             set { SetValue(KinectProperty, value); }
         }
 
         private ColorImageFormat _currentColorImageFormat;
-        private byte[] _colorImageData;
         private WriteableBitmap _colorImageWritableBitmap;
         private AdornerLayer _parentAdorner;
         private List<KinectDrawer> _drawers = new List<KinectDrawer>();
@@ -46,54 +45,50 @@ namespace Emotions
             ColorImage.Source = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgr32, null);
         }
 
-        private void OnSensorChanged(KinectSensor oldSensor, KinectSensor newSensor)
+        private void OnSensorChanged(IKinectSource oldSensor, IKinectSource newSensor)
         {
             if (oldSensor != null)
-                oldSensor.AllFramesReady -= this.OnAllFramesReady;
+                oldSensor.FramesReady -= OnAllFramesReady;
 
             if (newSensor != null)
-                newSensor.AllFramesReady += this.OnAllFramesReady;
+                newSensor.FramesReady += OnAllFramesReady;
         }
 
-        private void OnAllFramesReady(object sender, AllFramesReadyEventArgs e)
+        private void OnAllFramesReady(object sender, FramesReadyEventArgs framesReadyEventArgs)
         {
-            DrawColorStream(e);
+            Dispatcher.Invoke(() => DrawColorStream((IKinectSource)sender, framesReadyEventArgs));
         }
 
-        private void DrawColorStream(AllFramesReadyEventArgs e)
+        private void DrawColorStream(IKinectSource source, FramesReadyEventArgs e)
         {
-            using (var colorImageFrame = e.OpenColorImageFrame())
+            if(e.ColorFrame.Data == null)
+                return;
+
+            // Make a copy of the color frame for displaying.
+            var haveNewFormat = ColorImageFormat.Undefined != source.Info.ColorImageFormat;
+            if (haveNewFormat)
             {
-                if (colorImageFrame == null)
-                {
-                    return;
-                }
-
-                // Make a copy of the color frame for displaying.
-                var haveNewFormat = ColorImageFormat.Undefined != colorImageFrame.Format;
-                if (haveNewFormat)
-                {
-                    _currentColorImageFormat = colorImageFrame.Format;
-                    _colorImageData = new byte[colorImageFrame.PixelDataLength];
-                    _colorImageWritableBitmap = new WriteableBitmap(
-                        colorImageFrame.Width, colorImageFrame.Height, 96, 96, PixelFormats.Bgr32, null);
-                    ColorImage.Source = _colorImageWritableBitmap;
-                }
-
-                colorImageFrame.CopyPixelDataTo(_colorImageData);
-                _colorImageWritableBitmap.WritePixels(
-                    new Int32Rect(0, 0, colorImageFrame.Width, colorImageFrame.Height),
-                    this._colorImageData,
-                    colorImageFrame.Width * ((PixelFormats.Bgr32.BitsPerPixel + 7) / 8),
-                    0);
+                _currentColorImageFormat = source.Info.ColorImageFormat;
+                _colorImageWritableBitmap = new WriteableBitmap(
+                    source.Info.ColorFrameWidth, source.Info.ColorFrameHeight, 96, 96, PixelFormats.Bgr32, null);
+                ColorImage.Source = _colorImageWritableBitmap;
             }
+
+            _colorImageWritableBitmap.WritePixels(
+                new Int32Rect(0, 0, source.Info.ColorFrameWidth, source.Info.ColorFrameHeight),
+                e.ColorFrame.Data,
+                source.Info.ColorFrameWidth * ((PixelFormats.Bgr32.BitsPerPixel + 7) / 8),
+                0);
         }
 
         public void TrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)
         {
-            var drawer = new KinectDrawer(ColorImage, skeletonFaceTracker);
-            _drawers.Add(drawer);
-            _parentAdorner.Add(drawer);
+            Dispatcher.Invoke(() =>
+            {
+                var drawer = new KinectDrawer(ColorImage, skeletonFaceTracker);
+                _drawers.Add(drawer);
+                _parentAdorner.Add(drawer);
+            });
         }
 
         public void UnTrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
-namespace Emotions.Services.KinectInput
+namespace Emotions.KinectTools
 {
     public class SkeletonFaceTracker : IDisposable
     {
@@ -19,17 +19,17 @@ namespace Emotions.Services.KinectInput
 
         public void Dispose()
         {
-            if (this._faceTracker != null)
+            if (_faceTracker != null)
             {
-                this._faceTracker.Dispose();
-                this._faceTracker = null;
+                _faceTracker.Dispose();
+                _faceTracker = null;
             }
         }
 
         /// <summary>
         /// Updates the face tracking information for this skeleton
         /// </summary>
-        internal void OnFrameReady(KinectSensor kinectSensor, ColorImageFormat colorImageFormat, byte[] colorImage, DepthImageFormat depthImageFormat, short[] depthImage, Skeleton skeletonOfInterest)
+        internal void OnFrameReady(IKinectSource source, byte[] colorImage, short[] depthImage, Skeleton skeletonOfInterest)
         {
             _skeletonTrackingState = skeletonOfInterest.TrackingState;
 
@@ -43,7 +43,16 @@ namespace Emotions.Services.KinectInput
             {
                 try
                 {
-                    _faceTracker = new FaceTracker(kinectSensor);
+                    _faceTracker = new FaceTracker(
+                        source.Info.ColorImageFormat,
+                        source.Info.ColorFrameWidth,
+                        source.Info.ColorFrameHeight,
+                        source.Info.ColorFocalLength,
+                        source.Info.DepthImageFormat,
+                        source.Info.DepthFrameWidth,
+                        source.Info.DepthFrameHeight,
+                        source.Info.DepthFocalLength,
+                        source.Info.Mapper);
                 }
                 catch (InvalidOperationException)
                 {
@@ -55,15 +64,14 @@ namespace Emotions.Services.KinectInput
                 }
             }
 
-            if (this._faceTracker != null)
+            if (_faceTracker == null) return;
+            
+            var frame = _faceTracker.Track(source.Info.ColorImageFormat, colorImage, source.Info.DepthImageFormat, depthImage, skeletonOfInterest);
+            _lastFaceTrackSucceeded = frame.TrackSuccessful;
+            if (_lastFaceTrackSucceeded)
             {
-                var frame = this._faceTracker.Track(colorImageFormat, colorImage, depthImageFormat, depthImage, skeletonOfInterest);
-                _lastFaceTrackSucceeded = frame.TrackSuccessful;
-                if (_lastFaceTrackSucceeded)
-                {
-                    if (TrackSucceed != null)
-                        TrackSucceed(this, frame, skeletonOfInterest);
-                }
+                if (TrackSucceed != null)
+                    TrackSucceed(this, frame, skeletonOfInterest);
             }
         }
 

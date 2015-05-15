@@ -18,19 +18,43 @@ namespace Emotions.Services.Engine
         }
 
         public TimeSpan Time;
-        public double AU1;
-        public double AU2;
-        public double AU3;
-        public double AU4;
-        public double AU5;
-        public double AU6;
-        public Point3 FacePosition;
+
+        /// <summary>
+        /// FACS AU 10 
+        /// </summary>
+        public double LipRaiser; 
+
+        /// <summary>
+        /// FACS AU 26
+        /// </summary>
+        public double JawLowerer;
+
+        /// <summary>
+        /// FACS AU 20
+        /// </summary>
+        public double LipStretcher;
+
+        /// <summary>
+        /// FACS AU 4
+        /// </summary>
+        public double BrowLowerer;
+
+        /// <summary>
+        /// FACS AU 15
+        /// </summary>
+        public double LipCornerDepressor;
+
+        /// <summary>
+        /// FACS AU 2
+        /// </summary>
+        public double BrowRaiser;
+
+        public Point3 FacePosition; 
         public Point3 FaceRotation;
         public Point3[] FeaturePoints;
 
         public object Clone()
         {
-            // TODO improve
             return this.MemberwiseClone();
         }
     }

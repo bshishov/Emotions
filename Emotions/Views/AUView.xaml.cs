@@ -25,12 +25,12 @@ namespace Emotions.Views
 
         public void Update(Frame frame)
         {
-            AU1.Value = frame.AU1;
-            AU2.Value = frame.AU2;
-            AU3.Value = frame.AU3;
-            AU4.Value = frame.AU4;
-            AU5.Value = frame.AU5;
-            AU6.Value = frame.AU6;
+            AU1.Value = frame.LipRaiser;
+            AU2.Value = frame.JawLowerer;
+            AU3.Value = frame.LipStretcher;
+            AU4.Value = frame.BrowLowerer;
+            AU5.Value = frame.LipCornerDepressor;
+            AU6.Value = frame.BrowRaiser;
 
             /*
             PosXLabel.Content = buffer.FacePosition.X;

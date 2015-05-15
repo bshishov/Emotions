@@ -5,7 +5,9 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emotions", "Emotions\Emotions.csproj", "{861180EC-CA8F-47F2-BF65-911C229F6E5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Kinect.Toolkit.FaceTracking", "..\..\..\..\Program Files\Microsoft SDKs\Kinect\Developer Toolkit v1.8.0\Samples\C#\Microsoft.Kinect.Toolkit.FaceTracking\Microsoft.Kinect.Toolkit.FaceTracking.csproj", "{1BCF9CEE-DF01-430E-B49D-41A9A88963EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Kinect.Toolkit.FaceTracking", "Microsoft.Kinect.Toolkit.FaceTracking\Microsoft.Kinect.Toolkit.FaceTracking.csproj", "{1BCF9CEE-DF01-430E-B49D-41A9A88963EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emotions.KinectTools", "Emotions.KinectTools\Emotions.KinectTools.csproj", "{6F068AC3-08F8-4833-9145-4A114B76B7C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,18 @@ Global
 		{1BCF9CEE-DF01-430E-B49D-41A9A88963EB}.Release|Win32.Build.0 = Release|Win32
 		{1BCF9CEE-DF01-430E-B49D-41A9A88963EB}.Release|x64.ActiveCfg = Release|x64
 		{1BCF9CEE-DF01-430E-B49D-41A9A88963EB}.Release|x64.Build.0 = Release|x64
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Release|Win32.ActiveCfg = Release|Any CPU
+		{6F068AC3-08F8-4833-9145-4A114B76B7C3}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

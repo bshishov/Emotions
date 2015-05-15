@@ -21,7 +21,7 @@ namespace Emotions.ViewModels
 
         public AUViewModel()
         {
-            DisplayName = "Animation Units";
+            DisplayName = "Action Units";
         }
 
         protected override void OnViewLoaded(object view)

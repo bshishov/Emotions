@@ -15,7 +15,7 @@ namespace Emotions.Services.Engine
 
         public bool Handles(string path)
         {
-            return Path.GetExtension(path) == ".rec";
+            return Path.GetExtension(path) == ".erec";
         }
 
         public IDocument Create(string path)

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Emotions.KinectTools;
 using Emotions.Services.KinectInput;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
@@ -32,7 +33,7 @@ namespace Emotions.Utilities
             _facePoints = frame.GetProjected3DShape();
             _triangles = frame.GetTriangles();
             _skeleton = skeleton;
-            InvalidateVisual();
+            Dispatcher.Invoke(InvalidateVisual);
         }
 
         protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
