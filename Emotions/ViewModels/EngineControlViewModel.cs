@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using Caliburn.Micro;
 using Emotions.KinectTools;
 using Emotions.Services.Engine;
 using Emotions.Services.KinectInput;
@@ -12,6 +13,7 @@ namespace Emotions.ViewModels
     class EngineControlViewModel : Tool
     {
         [Import] private IKinectInputService _inputService;
+        private readonly ILog _log = LogManager.GetLog(typeof(EngineControlViewModel));
         private EngineState _state;
         private Recorder _recorder;
 
@@ -48,8 +50,7 @@ namespace Emotions.ViewModels
             get { return _inputService.ActiveSource is RealKinectSource; }
             set
             {
-                //if (_engine != null)
-                    //_engine.Start();
+                _log.Info("Switching to realtime mode");
                 _inputService.LoadRealKinect();
                 NotifyOfPropertyChange(() => RTChecked);
             }
@@ -63,6 +64,7 @@ namespace Emotions.ViewModels
                 var fileName = string.Format("kinect{0}.rec", DateTime.Now.ToString("yyyyMMddHHmmssfff"));
                 _recorder = new Recorder(_inputService.ActiveSource, fileName);
                 _recorder.Start();
+                _log.Info("Recording started: {0}", fileName);
                 NotifyOfPropertyChange(() => RecChecked);
                 UpdateState();
             }
@@ -87,6 +89,7 @@ namespace Emotions.ViewModels
                     _recorder.Stop();
                     _recorder.Dispose();
                     _recorder = null;
+                    _log.Info("Recording stopped");
                     UpdateState();
                     NotifyOfPropertyChange(() => PauseChecked);
                 }
@@ -94,6 +97,7 @@ namespace Emotions.ViewModels
                 if (_inputService.ActiveSource is KinectPlayer)
                 {
                     _inputService.ActiveSource.Stop();
+                    _log.Info("Playback stopped");
                 }
             }
         }

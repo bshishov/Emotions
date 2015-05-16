@@ -33,9 +33,9 @@ namespace Emotions.Services.KinectInput
         {
             try
             {
-                var source = new RealKinectSource();
+                var sensor = new RealKinectSource();
                 _log.Info("Sensor initialized");
-                ActiveSource = source;
+                ActiveSource = sensor;
             }
             catch (Exception ex)
             {
@@ -47,9 +47,10 @@ namespace Emotions.Services.KinectInput
 
         private void OnSourceChanged(object sender, SourceChangedArgs e)
         {
-            if (e.OldSource != null)
+            if (e.OldSource is KinectPlayer)
             {
                 e.OldSource.Stop();
+                e.OldSource.Dispose();
             }
 
             if (e.NewSource != null)
@@ -59,14 +60,14 @@ namespace Emotions.Services.KinectInput
 
                 if (_tracker != null)
                 {
-                    _tracker.SkeletonTracked -= TrackerOnSkeletonTracked;
-                    _tracker.SkeletonUnTracked -= TrackerOnSkeletonUnTracked;
-                    _tracker.Dispose();
+                    //_tracker.SkeletonTracked -= TrackerOnSkeletonTracked;
+                    //_tracker.SkeletonUnTracked -= TrackerOnSkeletonUnTracked;
+                    //_tracker.Dispose();
                 }
 
-                _tracker = new SkeletonTracker(_kinectSource);
-                _tracker.SkeletonTracked += TrackerOnSkeletonTracked;
-                _tracker.SkeletonUnTracked += TrackerOnSkeletonUnTracked;
+                //_tracker = new SkeletonTracker(_kinectSource);
+                //_tracker.SkeletonTracked += TrackerOnSkeletonTracked;
+                //_tracker.SkeletonUnTracked += TrackerOnSkeletonUnTracked;
 
                 _viewer.Kinect = _kinectSource;
             }
