@@ -11,12 +11,12 @@ namespace Emotions.Services.Engine
     {
         public const string NameFormat = "Recording-{0}.rec";
 
-        public IEnumerable<Frame> Frames { get { return _frames; } }
-        private readonly List<Frame> _frames;
+        public IEnumerable<EngineFrame> Frames { get { return _frames; } }
+        private readonly List<EngineFrame> _frames;
 
         public Recording()
         {
-            _frames = new List<Frame>();
+            _frames = new List<EngineFrame>();
         }
 
         public static Recording FromFile(string path)
@@ -28,9 +28,9 @@ namespace Emotions.Services.Engine
             return obj;
         }
 
-        public void Add(Frame frame)
+        public void Add(EngineFrame engineFrame)
         {
-            _frames.Add(frame);
+            _frames.Add(engineFrame);
         }
 
         public void Save(string path)

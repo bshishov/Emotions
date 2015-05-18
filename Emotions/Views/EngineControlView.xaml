@@ -20,19 +20,19 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="#222">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <ToggleButton IsChecked="{Binding RTChecked}" IsEnabled="{Binding RTEnabled, Mode=OneWay}" >
-                <Image Source="../Resources/rt.png" />
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding RTChecked}" IsEnabled="{Binding RTEnabled, Mode=OneWay}" >
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">N</TextBlock>
             </ToggleButton>
-            <ToggleButton IsChecked="{Binding RecChecked}" IsEnabled="{Binding RecEnabled, Mode=OneWay}">
-                <Image Source="../Resources/rec.png" />
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding RecChecked}" IsEnabled="{Binding RecEnabled, Mode=OneWay}">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightCoral" FontSize="40">}</TextBlock>
             </ToggleButton>
-            <ToggleButton IsChecked="{Binding PlayChecked}" IsEnabled="{Binding PlayEnabled, Mode=OneWay}">
-                <Image Source="../Resources/play.png" />
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding PlayChecked}" IsEnabled="{Binding PlayEnabled, Mode=OneWay}">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">{</TextBlock>
             </ToggleButton>
-            <ToggleButton IsChecked="{Binding PauseChecked}" IsEnabled="{Binding PauseEnabled, Mode=OneWay}">
-                <Image Source="../Resources/pause.png" />
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding PauseChecked}" IsEnabled="{Binding PauseEnabled, Mode=OneWay}">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">~</TextBlock>
             </ToggleButton>
         </StackPanel>
     </Grid>

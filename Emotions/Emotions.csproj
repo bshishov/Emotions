@@ -66,7 +66,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -123,11 +123,12 @@
     <Compile Include="Services\Engine\RecordingProvider.cs" />
     <Compile Include="Services\KinectInput\SourceChangedArgs.cs" />
     <Compile Include="Utilities\EngineDrawer.cs" />
-    <Compile Include="Utilities\KinectDrawer.cs" />
+    <Compile Include="Utilities\GameCanvas.cs" />
+    <Compile Include="Utilities\SkeletonDrawer.cs" />
     <Compile Include="Controls\RangedProperty.xaml.cs">
       <DependentUpon>RangedProperty.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\Engine\Frame.cs" />
+    <Compile Include="Services\Engine\EngineFrame.cs" />
     <Compile Include="Services\Engine\Recording.cs" />
     <Compile Include="Services\KinectInput\IKinectInputService.cs" />
     <Compile Include="Services\KinectInput\KinectInputService.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Services\Engine\TrainingDataSet.cs" />
     <Compile Include="ViewModels\AUViewModel.cs" />
     <Compile Include="ViewModels\EngineControlViewModel.cs" />
+    <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\KinectOutputViewModel.cs" />
     <Compile Include="Modules\Output\ViewModels\OutputViewModel.cs" />
     <Compile Include="Views\AUView.xaml.cs">
@@ -142,6 +144,9 @@
     </Compile>
     <Compile Include="Views\EngineControlView.xaml.cs">
       <DependentUpon>EngineControlView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GameView.xaml.cs">
+      <DependentUpon>GameView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\KinectOutputView.xaml.cs">
       <DependentUpon>KinectOutputView.xaml</DependentUpon>
@@ -164,11 +169,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AUView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EngineControlView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GameView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -195,27 +208,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Resource Include="Resources\pause.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\play.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\play_active.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\rec.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\rec_active.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\rt.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\rt_active.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Entypo.ttf" />
+    <Resource Include="Resources\Entypo-license.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

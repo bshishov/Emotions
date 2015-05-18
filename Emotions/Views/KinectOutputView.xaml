@@ -3,14 +3,67 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:Emotions="clr-namespace:Emotions"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls="clr-namespace:Emotions.Controls"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:utilities="clr-namespace:Emotions.Utilities"
              x:Class="Emotions.Views.KinectOutputView" 
              mc:Ignorable="d" 
+             Background="#222222"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Emotions:KinectViewer 
-        HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch"
-        cal:Message.Attach="[Event Loaded] = [Action OnViewerInitialized($source, $dataContext)]" 
-        />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ObjectDataProvider x:Key="availableModes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="controls:Modes"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <ToolBar>
+            <ComboBox x:Name="ModeSelector" Width="70" ItemsSource="{Binding Source={StaticResource availableModes}}" SelectedIndex="1"></ComboBox>
+            <Slider x:Name="OpacitySelector" Width="50" VerticalAlignment="Center" Value="1" Maximum="1" Minimum="0"/>
+            <ToggleButton IsChecked="{Binding IsTrackingEnabled}">Tracking</ToggleButton>
+            <ToggleButton x:Name="ShowSkeletonButton">Skeleton</ToggleButton>
+            <ToggleButton x:Name="ShowFaceButton" IsChecked="True">Face</ToggleButton>
+            <ToggleButton x:Name="ShowEngineButton" IsChecked="{Binding IsEngineEnabled}">Engine</ToggleButton>
+        </ToolBar>
+        <Grid Grid.Row="1" Background="Black">
+            <Viewbox Stretch="Uniform">
+                <Grid>
+                    <utilities:EngineDrawer ZIndex="3" IsEnabled="{Binding IsChecked, ElementName=ShowEngineButton, Mode=OneWay}"/>
+                    <utilities:SkeletonDrawer ZIndex="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                              ShowFace="{Binding IsChecked, ElementName=ShowFaceButton, Mode=OneWay}"
+                                              ShowSkeleton="{Binding IsChecked, ElementName=ShowSkeletonButton, Mode=OneWay}"
+                                              SkeletonFaceTracker="{Binding SkeletonFaceTracker}" Width="640" Height="480"/>
+                    <controls:KinectViewer
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                        cal:Message.Attach="[Event Loaded] = [Action OnViewerInitialized($source, $dataContext)]" 
+                        Mode="{Binding SelectedItem, ElementName=ModeSelector, Mode=OneWay}"
+                        Opacity="{Binding Value, ElementName=OpacitySelector, Mode=OneWay}"/>
+                </Grid>
+            </Viewbox>
+        </Grid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" IsChecked="{Binding IsRecording}" Width="40" Height="40">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightCoral" FontSize="40">}</TextBlock>
+            </ToggleButton>
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" IsChecked="{Binding IsRunning}" Width="40" Height="40">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">{</TextBlock>
+            </ToggleButton>
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" IsEnabled="{Binding IsRunning, Mode=OneWay}" Width="40" Height="40" cal:Message.Attach="[Event Click] = [Action Pause()]">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">|</TextBlock>
+            </Button>
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" IsEnabled="{Binding IsRunning, Mode=OneWay}" Width="40" Height="40" cal:Message.Attach="[Event Click] = [Action Stop()]">
+                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">~</TextBlock>
+            </Button>
+        </StackPanel>
+    </Grid>
+    
 </UserControl>

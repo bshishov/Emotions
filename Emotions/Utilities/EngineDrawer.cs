@@ -1,36 +1,36 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.Windows;
-using System.Windows.Documents;
+using System.Windows.Controls;
 using System.Windows.Media;
+
 using Caliburn.Micro;
 using Emotions.Services.Engine;
 
 namespace Emotions.Utilities
 {
-    class EngineDrawer : Adorner, IDisposable
+    class EngineDrawer : Canvas, IDisposable
     {
-        private Frame _frame;
+        private EngineFrame _engineFrame;
         private readonly Brush _brush = Brushes.Red;
         private readonly Pen _pen = new Pen(Brushes.Red, 1);
 
-        public EngineDrawer(UIElement adornedElement) : base(adornedElement)
+        public EngineDrawer()
         {
             IoC.Get<IEngineService>().OnUpdate += EngineOnOnUpdate;
         }
 
         private void EngineOnOnUpdate(object sender, EngineUpdateEventArgs args)
         {
-            _frame = args.Frame;
+            _engineFrame = args.EngineFrame;
             Dispatcher.Invoke(InvalidateVisual);
         }
 
         protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
         {
-            if (_frame != null && _frame.FeaturePoints != null)
+            if (_engineFrame != null && _engineFrame.FeaturePoints != null)
             {
                 var faceModelGroup = new GeometryGroup();
-                foreach (var point in _frame.FeaturePoints)
+                foreach (var point in _engineFrame.FeaturePoints)
                 {
                     faceModelGroup.Children.Add(new EllipseGeometry(Project(point), 1, 1));
                 }
@@ -45,7 +45,7 @@ namespace Emotions.Utilities
             IoC.Get<IEngineService>().OnUpdate -= EngineOnOnUpdate;
         }
 
-        private Point Project(Frame.Point3 point)
+        private Point Project(EngineFrame.Point3 point)
         {
             const double xf = 0.75f;
             const double yf = 1.1f;

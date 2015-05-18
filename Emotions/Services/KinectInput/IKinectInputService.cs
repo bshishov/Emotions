@@ -1,15 +1,13 @@
-﻿using System;
-using Emotions.KinectTools;
+﻿using Emotions.KinectTools;
+using Gemini.Framework;
 
 namespace Emotions.Services.KinectInput
 {
     internal interface IKinectInputService
     {
-        event EventHandler<SourceChangedArgs> SourceChanged;
-        IKinectSource ActiveSource { get; }
+        bool IsKinectAvailable { get; }
+        IKinectSource GetKinect();
         void Dispose();
-        void AttachViewer(KinectViewer viewer);
-        void LoadRealKinect();
-        void LoadRecording(string path);
+        IKinectSource LoadRecording(string path);
     }
 }

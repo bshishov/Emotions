@@ -1,33 +1,75 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Emotions.KinectTools;
-using Emotions.Services.KinectInput;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using Point = System.Windows.Point;
 
 namespace Emotions.Utilities
 {
-    public class KinectDrawer : Adorner, IDisposable
+    public class SkeletonDrawer : Canvas
     {
-        private readonly SkeletonFaceTracker _tracker;
+        private SkeletonFaceTracker _tracker;
         private EnumIndexableCollection<FeaturePoint, PointF> _facePoints;
         private FaceTriangle[] _triangles;
         private readonly Brush _brush = Brushes.Cyan;
         private readonly Pen _pen = new Pen(Brushes.Cyan, 1);
         private Skeleton _skeleton;
 
-        public SkeletonFaceTracker Tracker { get { return _tracker; } }
+        public static readonly DependencyProperty SkeletonFaceTrackerProperty = DependencyProperty.Register(
+            "SkeletonFaceTracker", typeof (SkeletonFaceTracker), typeof (SkeletonDrawer),
+            new PropertyMetadata(default(SkeletonFaceTracker),
+                (o, args) =>
+                    ((SkeletonDrawer) o).OnTrackerChanged((SkeletonFaceTracker) args.OldValue,
+                        (SkeletonFaceTracker) args.NewValue)));
 
-        public KinectDrawer(UIElement adornedElement, SkeletonFaceTracker tracker) : base(adornedElement)
+        public static readonly DependencyProperty ShowFaceProperty = DependencyProperty.Register(
+            "ShowFace", typeof (bool), typeof (SkeletonDrawer), new PropertyMetadata(default(bool)));
+
+        public bool ShowFace
         {
-            _tracker = tracker;
-            _tracker.TrackSucceed += TrackerOnTrackSucceed;
+            get { return (bool) GetValue(ShowFaceProperty); }
+            set { SetValue(ShowFaceProperty, value); }
         }
 
+        public static readonly DependencyProperty ShowSkeletonProperty = DependencyProperty.Register(
+            "ShowSkeleton", typeof (bool), typeof (SkeletonDrawer), new PropertyMetadata(default(bool)));
+
+        public bool ShowSkeleton
+        {
+            get { return (bool) GetValue(ShowSkeletonProperty); }
+            set { SetValue(ShowSkeletonProperty, value); }
+        }
+
+        private void OnTrackerChanged(SkeletonFaceTracker oldValue, SkeletonFaceTracker newValue)
+        {
+            if (oldValue != null)
+                oldValue.TrackSucceed -= TrackerOnTrackSucceed;
+            if (newValue != null)
+                newValue.TrackSucceed += TrackerOnTrackSucceed;
+            else
+            {
+                _facePoints = null;
+                _triangles = null;
+                _skeleton = null;
+                InvalidateVisual();
+            }
+        }
+        
+        public SkeletonFaceTracker SkeletonFaceTracker
+        {
+            get { return (SkeletonFaceTracker) GetValue(SkeletonFaceTrackerProperty); }
+            set { SetValue(SkeletonFaceTrackerProperty, value); }
+        }
+        
+        public SkeletonDrawer()
+        {
+            
+        }
+
+        
         private void TrackerOnTrackSucceed(object sender, FaceTrackFrame frame, Skeleton skeleton)
         {
             _facePoints = frame.GetProjected3DShape();
@@ -38,7 +80,7 @@ namespace Emotions.Utilities
 
         protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
         {
-            if (_facePoints != null)
+            if (ShowFace && _facePoints != null)
             {
                 var faceModelGroup = new GeometryGroup();
                 foreach (var faceTriangle in _triangles)
@@ -57,8 +99,10 @@ namespace Emotions.Utilities
                     faceModelGroup.Children.Add(triangle);
                 }
                 drawingContext.DrawGeometry(_brush, _pen, faceModelGroup);
-                
+            }
 
+            if(ShowSkeleton && _skeleton != null)
+            {
                 DrawJoints(drawingContext, _skeleton.Joints[JointType.Head], _skeleton.Joints[JointType.ShoulderCenter]);
 
                 DrawJoints(drawingContext, _skeleton.Joints[JointType.ShoulderCenter], _skeleton.Joints[JointType.ShoulderLeft]);

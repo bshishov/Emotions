@@ -15,7 +15,12 @@ namespace Emotions.KinectTools
         private Skeleton[] _skeletonData;
         private readonly KinectSensor _sensor;
 
+        public event Action<IKinectSource> Started;
+        public event Action<IKinectSource> Stopped;
+        public string Name { get { return "Kinect Sensor"; } }
+        public bool IsActive { get { return _sensor.IsRunning; } }
         public event Action<IKinectSource, FramesReadyEventArgs> FramesReady;
+        
 
         public KinectSourceInfo Info { get; private set; }
 
@@ -24,8 +29,12 @@ namespace Emotions.KinectTools
             if(_sensor == null)
                 throw new Exception("No sensor");
 
-            if(!_sensor.IsRunning)
+            if (!_sensor.IsRunning)
+            {
                 _sensor.Start();
+                if (Started != null)
+                    Started(this);
+            }
         }
 
         public void Stop()
@@ -33,8 +42,9 @@ namespace Emotions.KinectTools
             if (_sensor == null)
                 throw new Exception("No sensor");
             
-            // Don't shutdown the sensor
-            // _sensor.Stop();
+            _sensor.Stop();
+            if (Stopped != null)
+                Stopped(this);
         }
 
         public RealKinectSource()

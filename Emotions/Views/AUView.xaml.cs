@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
+using Emotions.Services.Engine;
 using Microsoft.Kinect.Toolkit.FaceTracking;
-using Frame = Emotions.Services.Engine.Frame;
 
 namespace Emotions.Views
 {
@@ -23,14 +23,14 @@ namespace Emotions.Views
         }
         
 
-        public void Update(Frame frame)
+        public void Update(EngineFrame engineFrame)
         {
-            AU1.Value = frame.LipRaiser;
-            AU2.Value = frame.JawLowerer;
-            AU3.Value = frame.LipStretcher;
-            AU4.Value = frame.BrowLowerer;
-            AU5.Value = frame.LipCornerDepressor;
-            AU6.Value = frame.BrowRaiser;
+            AU1.Value = engineFrame.LipRaiser;
+            AU2.Value = engineFrame.JawLowerer;
+            AU3.Value = engineFrame.LipStretcher;
+            AU4.Value = engineFrame.BrowLowerer;
+            AU5.Value = engineFrame.LipCornerDepressor;
+            AU6.Value = engineFrame.BrowRaiser;
 
             /*
             PosXLabel.Content = buffer.FacePosition.X;

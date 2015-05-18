@@ -4,11 +4,11 @@ namespace Emotions.Services.Engine
 {
     class EngineUpdateEventArgs : EventArgs
     {
-        public readonly Frame Frame;
+        public readonly EngineFrame EngineFrame;
 
-        public EngineUpdateEventArgs(Frame frame)
+        public EngineUpdateEventArgs(EngineFrame engineFrame)
         {
-            Frame = frame;
+            EngineFrame = engineFrame;
         }
     }
 }

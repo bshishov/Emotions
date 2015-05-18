@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Emotions.KinectTools;
-using Emotions.Services.KinectInput;
-using Emotions.Utilities;
 using Microsoft.Kinect;
 
-namespace Emotions
+namespace Emotions.Controls
 {
+    public enum Modes
+    {
+        None,
+        Color,
+        Depth
+    }
+
     /// <summary>
     /// Interaction logic for KinectViewer.xaml
     /// </summary>
@@ -25,107 +27,110 @@ namespace Emotions
             new PropertyMetadata(
                 null, (o, args) => ((KinectViewer)o).OnSensorChanged((IKinectSource)args.OldValue, (IKinectSource)args.NewValue)));
 
-       
+        public static readonly DependencyProperty ModeProperty = DependencyProperty.Register(
+            "Mode",
+            typeof(Modes),
+            typeof(KinectViewer),
+            new PropertyMetadata(
+                Modes.Color, (o, args) => ((KinectViewer)o).OnModeChanged((Modes)args.OldValue, (Modes)args.NewValue)));
+
+        private void OnModeChanged(Modes oldValue, Modes newValue)
+        {
+            _cachedMode = newValue;
+            _writableBitmap = new WriteableBitmap(10, 10, 96, 96, PixelFormats.Bgr32, null);
+            ColorImage.Source = _writableBitmap;
+        }
+
         public IKinectSource Kinect
         {
             get { return (IKinectSource)GetValue(KinectProperty); }
             set { SetValue(KinectProperty, value); }
         }
 
-        private ColorImageFormat _currentColorImageFormat;
-        private WriteableBitmap _colorImageWritableBitmap;
-        private AdornerLayer _parentAdorner;
-        private List<KinectDrawer> _drawers = new List<KinectDrawer>();
+        public Modes Mode
+        {
+            get { return (Modes)GetValue(ModeProperty); }
+            set { SetValue(ModeProperty, value); }
+        }
+        
+        private WriteableBitmap _writableBitmap;
+        private readonly Action<IKinectSource, FramesReadyEventArgs> _drawColorDelegate;
+        private readonly Action<IKinectSource, FramesReadyEventArgs> _drawDepthDelegate;
+        private Modes _cachedMode = Modes.Color;
 
         public KinectViewer()
         {
             InitializeComponent();
-            _parentAdorner = AdornerLayer.GetAdornerLayer(ColorImage);
-            _parentAdorner.Add(new EngineDrawer(ColorImage));
-            ColorImage.Source = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgr32, null);
+            _writableBitmap = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgr32, null);
+            ColorImage.Source = _writableBitmap;
+            _drawColorDelegate = DrawColorStream;
+            _drawDepthDelegate = DrawDepthStream;
         }
 
         private void OnSensorChanged(IKinectSource oldSensor, IKinectSource newSensor)
         {
             if (oldSensor != null)
-                oldSensor.FramesReady -= OnAllFramesReady;
+                oldSensor.FramesReady -= OnFramesReady;
 
             if (newSensor != null)
-                newSensor.FramesReady += OnAllFramesReady;
+                newSensor.FramesReady += OnFramesReady;
         }
 
-        private void OnAllFramesReady(object sender, FramesReadyEventArgs framesReadyEventArgs)
+        private void OnFramesReady(object sender, FramesReadyEventArgs framesReadyEventArgs)
         {
-            Dispatcher.Invoke(() => DrawColorStream((IKinectSource)sender, framesReadyEventArgs));
+            switch (_cachedMode)
+            {
+                case Modes.Color:
+                    Dispatcher.Invoke(_drawColorDelegate, sender as IKinectSource, framesReadyEventArgs);
+                    break;
+                case Modes.Depth:
+                    Dispatcher.Invoke(_drawDepthDelegate, sender as IKinectSource, framesReadyEventArgs);
+                    break;
+            }
         }
 
         private void DrawColorStream(IKinectSource source, FramesReadyEventArgs e)
         {
-            if(e.ColorFrame.Data == null)
+            if (source == null || e.ColorFrame.Data == null)
                 return;
 
-            // Make a copy of the color frame for displaying.
-            var haveNewFormat = ColorImageFormat.Undefined != source.Info.ColorImageFormat;
-            if (haveNewFormat)
+            if (_writableBitmap.PixelWidth != source.Info.ColorFrameWidth ||
+                _writableBitmap.PixelHeight != source.Info.ColorFrameHeight)
             {
-                _currentColorImageFormat = source.Info.ColorImageFormat;
-                _colorImageWritableBitmap = new WriteableBitmap(
-                    source.Info.ColorFrameWidth, source.Info.ColorFrameHeight, 96, 96, PixelFormats.Bgr32, null);
-                ColorImage.Source = _colorImageWritableBitmap;
+                _writableBitmap = new WriteableBitmap(
+                    source.Info.ColorFrameWidth, 
+                    source.Info.ColorFrameHeight, 
+                    96, 96, PixelFormats.Bgr32, null);
+                ColorImage.Source = _writableBitmap;
             }
 
-            _colorImageWritableBitmap.WritePixels(
+            _writableBitmap.WritePixels(
                 new Int32Rect(0, 0, source.Info.ColorFrameWidth, source.Info.ColorFrameHeight),
                 e.ColorFrame.Data,
                 source.Info.ColorFrameWidth * ((PixelFormats.Bgr32.BitsPerPixel + 7) / 8),
                 0);
         }
 
-        public void TrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)
+        private void DrawDepthStream(IKinectSource source, FramesReadyEventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            if (source == null || e.ColorFrame.Data == null)
+                return;
+
+            if (_writableBitmap.PixelWidth != source.Info.DepthFrameWidth ||
+                _writableBitmap.PixelHeight != source.Info.DepthFrameHeight)
             {
-                var drawer = new KinectDrawer(ColorImage, skeletonFaceTracker);
-                _drawers.Add(drawer);
-                _parentAdorner.Add(drawer);
-            });
-        }
+                _writableBitmap = new WriteableBitmap(
+                    source.Info.DepthFrameWidth,
+                    source.Info.DepthFrameHeight,
+                    96, 96, PixelFormats.Gray16, null);
+                ColorImage.Source = _writableBitmap;
+            }
 
-        public void UnTrackSkeleton(SkeletonFaceTracker skeletonFaceTracker)
-        {
-            var drawer = _drawers.FirstOrDefault(d => d.Tracker.Equals(skeletonFaceTracker));
-            if(drawer != null)
-                _parentAdorner.Remove(drawer);
-        }
-
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if(ColorImage != null)
-                ColorImage.Opacity = (e.NewValue/100);
-        }
-
-        private void ShowColorChecked(object sender, RoutedEventArgs e)
-        {
-            if (ColorImage != null)
-                ColorImage.Visibility = Visibility.Visible;
-        }
-
-        private void ShowFaceChecked(object sender, RoutedEventArgs e)
-        {
-            if(_parentAdorner != null)
-                _parentAdorner.Visibility = Visibility.Visible;
-        }
-
-        private void ShowColorUnChecked(object sender, RoutedEventArgs e)
-        {
-            if (ColorImage != null)
-                ColorImage.Visibility = Visibility.Hidden;
-        }
-
-        private void ShowFaceUnChecked(object sender, RoutedEventArgs e)
-        {
-            if (_parentAdorner != null)
-                _parentAdorner.Visibility = Visibility.Hidden;
+            _writableBitmap.WritePixels(
+                new Int32Rect(0, 0, source.Info.DepthFrameWidth, source.Info.DepthFrameHeight),
+                e.DepthFrame.Data,
+                source.Info.DepthFrameWidth * ((PixelFormats.Gray16.BitsPerPixel + 7) / 8),
+                0);
         }
     }
 }

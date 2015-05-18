@@ -31,16 +31,16 @@ namespace Emotions.ViewModels
             _view = this.GetView() as AUView;
         }
 
-        public delegate void UpdateUICallback(Frame buffer);
+        public delegate void UpdateUICallback(EngineFrame buffer);
 
         private void EngineOnOnUpdate(object sender, EngineUpdateEventArgs args)
         {
-            _view.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), args.Frame);
+            _view.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), args.EngineFrame);
         }
 
-        private void UpdateUI(Frame frame)
+        private void UpdateUI(EngineFrame engineFrame)
         {
-            _view.Update(frame);
+            _view.Update(engineFrame);
         }
     }
 }

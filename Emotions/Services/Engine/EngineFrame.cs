@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace Emotions.Services.Engine
 {
     [Serializable]
-    public class Frame : ICloneable
+    public class EngineFrame : ICloneable
     {
         [Serializable]
         [DebuggerDisplay("({X},{Y},{Z})")]

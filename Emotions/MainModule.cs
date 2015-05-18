@@ -36,12 +36,15 @@ namespace Emotions
         public override void PostInitialize()
         {
             base.PostInitialize();
-            Shell.OpenDocument(IoC.Get<KinectOutputViewModel>());
+            if (_kinectService.IsKinectAvailable)
+                Shell.OpenDocument(new KinectOutputViewModel(_kinectService.GetKinect()));
         }
 
         private IEnumerable<IResult> ShowKinectOutput()
         {
-            yield return Show.Document<KinectOutputViewModel>();
+            if (_kinectService.IsKinectAvailable)
+                yield return Show.Document(new KinectOutputViewModel(_kinectService.GetKinect()));
+            yield return null;
         }
     }
 }

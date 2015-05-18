@@ -5,16 +5,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using Emotions.KinectTools;
+using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit.FaceTracking;
 
 namespace Emotions.Services.Engine
 {
     [Export(typeof(IEngineService))]
-    class Engine : IEngineService
+    class Engine : IEngineService, IDisposable
     {
         private CancellationTokenSource _tokenSource;
         private Task _task;
         private const int FrameDelay = 1000 / 10; // 1000milliseconds / frames per second
-        private Frame _lastInput;
+        private EngineFrame _lastInput;
         private readonly ILog _log = LogManager.GetLog(typeof(Engine));
         private EngineState _state = EngineState.Stopped;
         private Stopwatch _recordingStopwatch;
@@ -39,12 +42,14 @@ namespace Emotions.Services.Engine
 
         public Recording Recording { get; private set; }
 
+        public SkeletonFaceTracker ActiveTracker { get; private set; }
+
         public Engine()
         {
             _log.Info("Engine initialized");
         }
 
-        public void ProceedInput(Frame input)
+        private void ProceedInput(EngineFrame input)
         {
             _lastInput = input;
             if (CurrentState == EngineState.KinectRecording)
@@ -58,7 +63,7 @@ namespace Emotions.Services.Engine
 
         public void Start()
         {
-            _lastInput = new Frame();
+            _lastInput = new EngineFrame();
             if (CurrentState == EngineState.Stopped)
             {
                 _tokenSource = new CancellationTokenSource();
@@ -139,7 +144,7 @@ namespace Emotions.Services.Engine
             _log.Info("Engine stopped");
         }
 
-        public void UpdateTask(CancellationToken token)
+        private void UpdateTask(CancellationToken token)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();   
@@ -162,7 +167,7 @@ namespace Emotions.Services.Engine
             CurrentState = EngineState.Stopped;
         }
 
-        public void RecordingUpdateTask(Recording recording, CancellationToken token)
+        private void RecordingUpdateTask(Recording recording, CancellationToken token)
         {
             var enumerator = recording.Frames.GetEnumerator();
             enumerator.MoveNext();
@@ -194,7 +199,7 @@ namespace Emotions.Services.Engine
             _log.Info("End of recording");
         }
 
-        public void Update(Frame frame)
+        private void Update(EngineFrame engineFrame)
         {
             /*if (_recognizer != null)
             {
@@ -208,14 +213,77 @@ namespace Emotions.Services.Engine
             }*/
             if (OnUpdate != null)
             {
-                OnUpdate(this, new EngineUpdateEventArgs((Frame)frame.Clone()));
+                OnUpdate(this, new EngineUpdateEventArgs((EngineFrame)engineFrame.Clone()));
             }
         }
-
-
-        public Frame GetFrame()
+        
+        public EngineFrame GetFrame()
         {
-            return (Frame)_lastInput.Clone();
+            return (EngineFrame)_lastInput.Clone();
+        }
+
+        public void Bind(SkeletonFaceTracker skeletonFaceTracker)
+        {
+            if(ActiveTracker != null)
+                ActiveTracker.TrackSucceed -= OnTrackerFrame;
+            ActiveTracker = skeletonFaceTracker;
+            ActiveTracker.TrackSucceed += OnTrackerFrame;
+        }
+
+        public void Unbind()
+        {
+            if (ActiveTracker != null)
+                ActiveTracker.TrackSucceed -= OnTrackerFrame;
+        }
+
+        private void OnTrackerFrame(object sender, FaceTrackFrame faceFrame, Skeleton skeleton)
+        {
+            var au = faceFrame.GetAnimationUnitCoefficients();
+            var featurepoints = faceFrame.Get3DShape();
+            var points = new EngineFrame.Point3[featurepoints.Count];
+            for (var i = 0; i < featurepoints.Count; i++)
+            {
+                points[i] = new EngineFrame.Point3()
+                {
+                    X = featurepoints[i].X,
+                    Y = featurepoints[i].Y,
+                    Z = featurepoints[i].Z
+                };
+            }
+
+            var frame = new EngineFrame()
+            {
+                FeaturePoints = points,
+                LipRaiser = au[AnimationUnit.LipRaiser],
+                JawLowerer = au[AnimationUnit.JawLower],
+                LipStretcher = au[AnimationUnit.LipStretcher],
+                BrowLowerer = au[AnimationUnit.BrowLower],
+                LipCornerDepressor = au[AnimationUnit.LipCornerDepressor],
+                BrowRaiser = au[AnimationUnit.BrowRaiser],
+                FacePosition = new EngineFrame.Point3()
+                {
+                    X = faceFrame.Translation.X,
+                    Y = faceFrame.Translation.Y,
+                    Z = faceFrame.Translation.Z,
+                },
+                FaceRotation = new EngineFrame.Point3()
+                {
+                    X = faceFrame.Rotation.X,
+                    Y = faceFrame.Rotation.Y,
+                    Z = faceFrame.Rotation.Z,
+                },
+            };
+            
+            ProceedInput(frame);
+        }
+
+        public void Dispose()
+        {
+            if (ActiveTracker != null)
+            {
+                ActiveTracker.TrackSucceed -= OnTrackerFrame;
+                ActiveTracker = null;
+            }
         }
     }
 }

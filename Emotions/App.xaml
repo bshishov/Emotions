@@ -6,6 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Style.xaml"/>
                 <ResourceDictionary>
                     <!--<gemini:AppBootstrapper x:Key="bootstrapper" /> -->
                     <!--<neuralNetworkTestUi:MyAppBootstrapper x:Key="bootstrapper" /> -->

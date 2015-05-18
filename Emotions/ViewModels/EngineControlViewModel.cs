@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using Caliburn.Micro;
-using Emotions.KinectTools;
 using Emotions.Services.Engine;
-using Emotions.Services.KinectInput;
 using Gemini.Framework;
 using Gemini.Framework.Services;
 
@@ -12,10 +9,10 @@ namespace Emotions.ViewModels
     [Export(typeof(EngineControlViewModel))]
     class EngineControlViewModel : Tool
     {
-        [Import] private IKinectInputService _inputService;
-        private readonly ILog _log = LogManager.GetLog(typeof(EngineControlViewModel));
+        [Import]
+        private IEngineService _engine;
+        private bool _rtChecked;
         private EngineState _state;
-        private Recorder _recorder;
 
         public override PaneLocation PreferredLocation
         {
@@ -30,75 +27,66 @@ namespace Emotions.ViewModels
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            _inputService.SourceChanged += (s, e) => UpdateState();
+            _engine.OnEngineStateChanged += EngineOnOnEngineStateChanged;
+            UpdateState(_engine.CurrentState);
         }
 
-        private void UpdateState()
+        private void EngineOnOnEngineStateChanged(object sender, EngineStateChangedEventArgs args)
         {
+            var state = args.NewValue;
+            UpdateState(state);
+        }
+
+        private void UpdateState(EngineState state)
+        {
+            _state = state;
             NotifyOfPropertyChange(() => RTEnabled);
             NotifyOfPropertyChange(() => RecEnabled);
             NotifyOfPropertyChange(() => PlayEnabled);
             NotifyOfPropertyChange(() => PauseEnabled);
             NotifyOfPropertyChange(() => RTChecked);
-            NotifyOfPropertyChange(() => PlayChecked);
             NotifyOfPropertyChange(() => RecChecked);
+            NotifyOfPropertyChange(() => PlayChecked);
             NotifyOfPropertyChange(() => PauseChecked);
         }
 
         public bool RTChecked
         {
-            get { return _inputService.ActiveSource is RealKinectSource; }
+            get { return _state == EngineState.KinectRealTime; }
             set
             {
-                _log.Info("Switching to realtime mode");
-                _inputService.LoadRealKinect();
-                NotifyOfPropertyChange(() => RTChecked);
+                if (_engine != null)
+                    _engine.Start();
             }
         }
 
         public bool RecChecked
         {
-            get { return _recorder != null; }
+            get { return _state == EngineState.KinectRecording; }
             set
             {
-                var fileName = string.Format("kinect{0}.rec", DateTime.Now.ToString("yyyyMMddHHmmssfff"));
-                _recorder = new Recorder(_inputService.ActiveSource, fileName);
-                _recorder.Start();
-                _log.Info("Recording started: {0}", fileName);
-                NotifyOfPropertyChange(() => RecChecked);
-                UpdateState();
+                if (_engine != null)
+                    _engine.StartRecording();
             }
         }
 
         public bool PlayChecked
         {
-            get { return _inputService.ActiveSource is KinectPlayer; }
-            set 
-            {                
-
+            get { return _state == EngineState.PlayingRecording; }
+            set
+            {
+                if (_engine != null)
+                    _engine.StartPlaying();
             }
         }
 
         public bool PauseChecked
         {
-            get { return false; }
+            get { return _state == EngineState.Stopped; }
             set
             {
-                if (_recorder != null)
-                {
-                    _recorder.Stop();
-                    _recorder.Dispose();
-                    _recorder = null;
-                    _log.Info("Recording stopped");
-                    UpdateState();
-                    NotifyOfPropertyChange(() => PauseChecked);
-                }
-
-                if (_inputService.ActiveSource is KinectPlayer)
-                {
-                    _inputService.ActiveSource.Stop();
-                    _log.Info("Playback stopped");
-                }
+                if (_engine != null)
+                    _engine.Stop();
             }
         }
 
@@ -106,6 +94,8 @@ namespace Emotions.ViewModels
         {
             get
             {
+                if (_state == EngineState.PlayingRecording)
+                    return false;
                 return true;
             }
         }
@@ -114,7 +104,7 @@ namespace Emotions.ViewModels
         {
             get
             {
-                if (_recorder == null)
+                if (_state == EngineState.KinectRealTime)
                     return true;
                 return false;
             }
@@ -124,7 +114,7 @@ namespace Emotions.ViewModels
         {
             get
             {
-                if (_inputService.ActiveSource is KinectPlayer)
+                if (_state == EngineState.Stopped)
                     return true;
                 return false;
             }
@@ -134,9 +124,11 @@ namespace Emotions.ViewModels
         {
             get
             {
-                if (_recorder != null)
+                if (_state == EngineState.PlayingRecording)
                     return true;
-                if (_inputService.ActiveSource is KinectPlayer)
+                if (_state == EngineState.KinectRealTime)
+                    return true;
+                if (_state == EngineState.KinectRecording)
                     return true;
                 return false;
             }
