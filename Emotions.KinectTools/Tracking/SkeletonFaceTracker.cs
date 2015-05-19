@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using Emotions.KinectTools.Sources;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
-namespace Emotions.KinectTools
+namespace Emotions.KinectTools.Tracking
 {
     public class SkeletonFaceTracker : IDisposable
     {

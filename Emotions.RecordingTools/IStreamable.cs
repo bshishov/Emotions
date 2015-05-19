@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Emotions.KinectTools
+namespace Emotions.RecordingTools
 {
     public interface IStreamable
     {

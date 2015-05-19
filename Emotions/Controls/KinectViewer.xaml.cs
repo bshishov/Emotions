@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Emotions.KinectTools;
+using Emotions.KinectTools.Frames;
+using Emotions.KinectTools.Sources;
 using Microsoft.Kinect;
 
 namespace Emotions.Controls
@@ -54,8 +56,8 @@ namespace Emotions.Controls
         }
         
         private WriteableBitmap _writableBitmap;
-        private readonly Action<IKinectSource, FramesReadyEventArgs> _drawColorDelegate;
-        private readonly Action<IKinectSource, FramesReadyEventArgs> _drawDepthDelegate;
+        private readonly Action<IKinectSource, FramesContainer> _drawColorDelegate;
+        private readonly Action<IKinectSource, FramesContainer> _drawDepthDelegate;
         private Modes _cachedMode = Modes.Color;
 
         public KinectViewer()
@@ -76,20 +78,20 @@ namespace Emotions.Controls
                 newSensor.FramesReady += OnFramesReady;
         }
 
-        private void OnFramesReady(object sender, FramesReadyEventArgs framesReadyEventArgs)
+        private void OnFramesReady(object sender, FramesContainer framesContainer)
         {
             switch (_cachedMode)
             {
                 case Modes.Color:
-                    Dispatcher.Invoke(_drawColorDelegate, sender as IKinectSource, framesReadyEventArgs);
+                    Dispatcher.Invoke(_drawColorDelegate, sender as IKinectSource, framesContainer);
                     break;
                 case Modes.Depth:
-                    Dispatcher.Invoke(_drawDepthDelegate, sender as IKinectSource, framesReadyEventArgs);
+                    Dispatcher.Invoke(_drawDepthDelegate, sender as IKinectSource, framesContainer);
                     break;
             }
         }
 
-        private void DrawColorStream(IKinectSource source, FramesReadyEventArgs e)
+        private void DrawColorStream(IKinectSource source, FramesContainer e)
         {
             if (source == null || e.ColorFrame.Data == null)
                 return;
@@ -111,7 +113,7 @@ namespace Emotions.Controls
                 0);
         }
 
-        private void DrawDepthStream(IKinectSource source, FramesReadyEventArgs e)
+        private void DrawDepthStream(IKinectSource source, FramesContainer e)
         {
             if (source == null || e.ColorFrame.Data == null)
                 return;
@@ -122,14 +124,14 @@ namespace Emotions.Controls
                 _writableBitmap = new WriteableBitmap(
                     source.Info.DepthFrameWidth,
                     source.Info.DepthFrameHeight,
-                    96, 96, PixelFormats.Gray16, null);
+                    96, 96, PixelFormats.Rgb24, null);
                 ColorImage.Source = _writableBitmap;
             }
 
             _writableBitmap.WritePixels(
                 new Int32Rect(0, 0, source.Info.DepthFrameWidth, source.Info.DepthFrameHeight),
-                e.DepthFrame.Data,
-                source.Info.DepthFrameWidth * ((PixelFormats.Gray16.BitsPerPixel + 7) / 8),
+                e.DepthFrame.GetRgb24Bytes(),
+                source.Info.DepthFrameWidth * ((PixelFormats.Rgb24.BitsPerPixel + 7) / 8),
                 0);
         }
     }

@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using Caliburn.Micro;
 using Emotions.Controls;
 using Emotions.KinectTools;
+using Emotions.KinectTools.Sources;
 using Emotions.ViewModels;
 using Gemini.Framework;
 using Gemini.Framework.Services;

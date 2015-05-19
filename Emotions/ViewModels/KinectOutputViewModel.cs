@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using Caliburn.Micro;
-using Emotions.Controls;
 using Emotions.KinectTools;
+using Emotions.KinectTools.Recorders;
+using Emotions.KinectTools.Sources;
+using Emotions.KinectTools.Tracking;
 using Emotions.Services.Engine;
 using Gemini.Framework;
 
@@ -25,6 +27,7 @@ namespace Emotions.ViewModels
             {
                 _currentSource = value;
                 NotifyOfPropertyChange(() => CurrentSource);
+                NotifyOfPropertyChange(() => IsRunning);
             }
         }
         public bool IsRunning
@@ -147,8 +150,11 @@ namespace Emotions.ViewModels
 
         private void StopTracking()
         {
-            SkeletonFaceTracker.Dispose();
-            SkeletonFaceTracker = null;
+            if (SkeletonFaceTracker != null)
+            {
+                SkeletonFaceTracker.Dispose();
+                SkeletonFaceTracker = null;
+            }
 
             _skeletonTracker.Dispose();
             _skeletonTracker.SkeletonTracked -= OnSkeletonTracked;
@@ -180,14 +186,7 @@ namespace Emotions.ViewModels
                 _log.Info("Recording finished");
             }
         }
-
-        public string DisplayName { get; private set; }
-
-        public KinectOutputViewModel()
-        {
-            
-        }
-
+        
         public KinectOutputViewModel(IKinectSource source)
         {
             DisplayName = source.Name;
@@ -199,21 +198,18 @@ namespace Emotions.ViewModels
         private void SourceOnStopped(IKinectSource obj)
         {
             NotifyOfPropertyChange(() => IsRunning);
+            _log.Info("Source stopped");
         }
 
         private void SourceOnStarted(IKinectSource kinectSource)
         {
             NotifyOfPropertyChange(() => IsRunning);
+            _log.Info("Source started");
         }
 
         public void OnViewerInitialized(object sender, object context)
         {   
             _log.Info("Kinect viewer initialized");
-            var control = sender as KinectViewer;
-            if (control != null && control.Kinect != _currentSource)
-                control.Kinect = _currentSource;
-            NotifyOfPropertyChange(()=>IsRunning);
-
             _engine = IoC.Get<IEngineService>();
         }
 

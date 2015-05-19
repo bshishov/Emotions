@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.Kinect;
 
 namespace Emotions.KinectTools.Frames
@@ -32,6 +33,36 @@ namespace Emotions.KinectTools.Frames
             FrameNumber = 0;
         }
 
+        public ColorFrame(byte[] data, ColorImageFormat format, int frameNumber, long timeStamp)
+        {
+            Data = From24bbpTo32bpp(data);
+            Format = format;
+            FrameNumber = frameNumber;
+            TimeStamp = timeStamp;
+
+            switch (format)
+            {
+                case ColorImageFormat.RgbResolution640x480Fps30:
+                    Width = 640;
+                    Height = 480;
+                    BytesPerPixel = 4; // 32bbp
+                    break;
+                case ColorImageFormat.RgbResolution1280x960Fps12:
+                    Width = 1280;
+                    Height = 960;
+                    BytesPerPixel = 4; // 32bbp
+                    break;
+                case ColorImageFormat.Undefined:
+                    throw new Exception("Format is not defined");
+                default:
+                    throw new Exception("Unsupported");
+            }
+            
+            PixelDataLength = Width*Height*BytesPerPixel;
+
+            if(Data.Length != PixelDataLength)
+                throw new Exception("Data.Length != PixelDataLength.");
+        }
 
         public void ToStream(BinaryWriter writer)
         {
@@ -56,6 +87,19 @@ namespace Emotions.KinectTools.Frames
             PixelDataLength = reader.ReadInt32();
             Data = reader.ReadBytes(PixelDataLength);
         }
-      
+
+        public byte[] From24bbpTo32bpp(byte[] source)
+        {
+            var pixelLen = (source.Length/3);
+            var bytes = new byte[pixelLen * 4]; 
+            for (var pixelIndex = 0; pixelIndex < pixelLen; pixelIndex++)
+            {
+                bytes[4 * pixelIndex + 0] = source[3 * pixelIndex + 0];
+                bytes[4 * pixelIndex + 1] = source[3 * pixelIndex + 1];
+                bytes[4 * pixelIndex + 2] = source[3 * pixelIndex + 2];
+                bytes[4 * pixelIndex + 3] = 0;
+            }
+            return bytes;
+        }
     }
 }

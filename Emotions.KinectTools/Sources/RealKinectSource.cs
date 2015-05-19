@@ -3,7 +3,7 @@ using Emotions.KinectTools.Frames;
 using Microsoft.Kinect;
 using SkeletonFrame = Microsoft.Kinect.SkeletonFrame;
 
-namespace Emotions.KinectTools
+namespace Emotions.KinectTools.Sources
 {
     public class RealKinectSource : IKinectSource
     {
@@ -19,7 +19,7 @@ namespace Emotions.KinectTools
         public event Action<IKinectSource> Stopped;
         public string Name { get { return "Kinect Sensor"; } }
         public bool IsActive { get { return _sensor.IsRunning; } }
-        public event Action<IKinectSource, FramesReadyEventArgs> FramesReady;
+        public event Action<IKinectSource, FramesContainer> FramesReady;
         
 
         public KinectSourceInfo Info { get; private set; }
@@ -150,7 +150,7 @@ namespace Emotions.KinectTools
                 if (_skeletonData == null || _skeletonData.Length != skeletonFrame.SkeletonArrayLength)
                     _skeletonData = new Skeleton[skeletonFrame.SkeletonArrayLength];
 
-                FramesReady.Invoke(this, new FramesReadyEventArgs(
+                FramesReady.Invoke(this, new FramesContainer(
                     new ColorFrame(colorImageFrame), 
                     new DepthFrame(depthImageFrame), 
                     new Frames.SkeletonFrame(skeletonFrame)));

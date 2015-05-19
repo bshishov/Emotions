@@ -43,6 +43,7 @@
                                               ShowSkeleton="{Binding IsChecked, ElementName=ShowSkeletonButton, Mode=OneWay}"
                                               SkeletonFaceTracker="{Binding SkeletonFaceTracker}" Width="640" Height="480"/>
                     <controls:KinectViewer
+                        Kinect="{Binding CurrentSource, Mode=OneTime}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                         cal:Message.Attach="[Event Loaded] = [Action OnViewerInitialized($source, $dataContext)]" 
                         Mode="{Binding SelectedItem, ElementName=ModeSelector, Mode=OneWay}"

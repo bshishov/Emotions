@@ -4,17 +4,33 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:utilities="clr-namespace:Emotions.Utilities"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+             d:DesignHeight="300" d:DesignWidth="500">
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <utilities:GameCanvas />
+        <Viewbox>
+            <utilities:GameCanvas 
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              cal:Message.Attach="
+                                    [Event Loaded] = [Action OnCanvasLoaded($source, $dataContext)];
+                                    [Event MouseLeftButtonUp] = [Action OnCanvasMouseLeftButtonUp($eventArgs)]" 
+                              Width="800" Height="800"/>
+        </Viewbox>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button>Start</Button>
-            <CheckBox>Start recording automatically</CheckBox>
+            <Button VerticalAlignment="Center" cal:Message.Attach="[Event Click] = [Action OnStartClicked()]" Margin="5" Padding="2">Start</Button>
+            <CheckBox VerticalAlignment="Center" IsChecked="{Binding AutoRec}">Start recording automatically</CheckBox>
+            <Rectangle Fill="Black" Width="1" Height="20" Margin="5"/>
+            <Label VerticalAlignment="Center" Content="Scored:"/>
+            <Label VerticalAlignment="Center" Content="{Binding Scored, Mode=OneWay}"/>
+            <Label VerticalAlignment="Center" Content="Failed:"/>
+            <Label VerticalAlignment="Center" Content="{Binding Failed, Mode=OneWay}"/>
+            <Label VerticalAlignment="Center" Content="Missed:"/>
+            <Label VerticalAlignment="Center" Content="{Binding Missed, Mode=OneWay}"/>
         </StackPanel>
     </Grid>
 </UserControl>

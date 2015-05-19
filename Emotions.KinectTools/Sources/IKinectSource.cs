@@ -1,11 +1,11 @@
 ﻿using System;
-using Microsoft.Kinect;
+using Emotions.KinectTools.Frames;
 
-namespace Emotions.KinectTools
+namespace Emotions.KinectTools.Sources
 {
     public interface IKinectSource : IDisposable
     {
-        event Action<IKinectSource, FramesReadyEventArgs> FramesReady;
+        event Action<IKinectSource, FramesContainer> FramesReady;
         event Action<IKinectSource> Started;
         event Action<IKinectSource> Stopped;
         string Name { get; }

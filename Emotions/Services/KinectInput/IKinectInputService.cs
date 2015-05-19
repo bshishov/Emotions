@@ -1,4 +1,5 @@
 ﻿using Emotions.KinectTools;
+using Emotions.KinectTools.Sources;
 using Gemini.Framework;
 
 namespace Emotions.Services.KinectInput

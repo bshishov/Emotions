@@ -31,6 +31,7 @@ namespace Emotions
             view.Add(new MenuItem("Kinect Output", ShowKinectOutput));
             view.Add(new MenuItem("Animation Units", () => Enumerable.Repeat((IResult)Show.Tool<AUViewModel>(), 1)));
             view.Add(new MenuItem("Engine Control", () => Enumerable.Repeat((IResult)Show.Tool<EngineControlViewModel>(), 1)));
+            view.Add(new MenuItem("Game", () => Enumerable.Repeat((IResult)Show.Document<GameViewModel>(), 1)));
         }
 
         public override void PostInitialize()

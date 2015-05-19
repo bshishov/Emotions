@@ -1,4 +1,5 @@
 ﻿using Emotions.KinectTools;
+using Emotions.KinectTools.Sources;
 
 namespace Emotions.Services.KinectInput
 {

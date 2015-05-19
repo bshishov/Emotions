@@ -1,14 +1,12 @@
-﻿using Emotions.KinectTools.Frames;
-
-namespace Emotions.KinectTools
+﻿namespace Emotions.KinectTools.Frames
 {
-    public class FramesReadyEventArgs
+    public class FramesContainer
     {
         public readonly ColorFrame ColorFrame;
         public readonly DepthFrame DepthFrame;
         public readonly SkeletonFrame SkeletonFrame;
 
-        public FramesReadyEventArgs(ColorFrame colorFrame, DepthFrame depthFrame, SkeletonFrame skeletonFrame)
+        public FramesContainer(ColorFrame colorFrame, DepthFrame depthFrame, SkeletonFrame skeletonFrame)
         {
             DepthFrame = depthFrame;
             SkeletonFrame = skeletonFrame;

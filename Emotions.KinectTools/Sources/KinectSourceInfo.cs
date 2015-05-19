@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Xml;
 using Microsoft.Kinect;
 
-namespace Emotions.KinectTools
+namespace Emotions.KinectTools.Sources
 {
     public class KinectSourceInfo : IStreamable
     {
@@ -18,7 +15,7 @@ namespace Emotions.KinectTools
         public CoordinateMapper Mapper { get; private set; }
         public float ColorFocalLength { get; private set; }
         public float DepthFocalLength { get; private set; }
-        
+
         public KinectSourceInfo(KinectSensor sensor)
         {
             ColorImageFormat = sensor.ColorStream.Format;

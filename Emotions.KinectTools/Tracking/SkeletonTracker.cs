@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Threading;
+using Emotions.KinectTools.Frames;
+using Emotions.KinectTools.Sources;
 using Microsoft.Kinect;
 
-namespace Emotions.KinectTools
+namespace Emotions.KinectTools.Tracking
 {
     public class SkeletonTracker : IDisposable
     {
@@ -46,7 +47,7 @@ namespace Emotions.KinectTools
             Dispose();
         }
 
-        private void OnAllFramesReady(object sender, FramesReadyEventArgs e)
+        private void OnAllFramesReady(object sender, FramesContainer e)
         {
             var source = sender as IKinectSource;
             

@@ -28,8 +28,10 @@ namespace Emotions.KinectTools.Frames
             _formatter = new BinaryFormatter();
         }
 
-        public SkeletonFrame()
+        public SkeletonFrame(int frame, long time)
         {
+            FrameNumber = frame;
+            TimeStamp = time;
             _formatter = new BinaryFormatter();
         }
 
@@ -49,13 +51,15 @@ namespace Emotions.KinectTools.Frames
 
         public void FromStream(BinaryReader reader)
         {
-            TimeStamp = reader.ReadInt64();
+            //TimeStamp = reader.ReadInt64();
+            var dumb1 = reader.ReadInt64();
             TrackingMode = (SkeletonTrackingMode)reader.ReadInt32();
             FloorClipPlane = new Tuple<float, float, float, float>(
                 reader.ReadSingle(), reader.ReadSingle(),
                 reader.ReadSingle(), reader.ReadSingle());
 
-            FrameNumber = reader.ReadInt32();
+            //FrameNumber = reader.ReadInt32();
+            var dumb2 = reader.ReadInt32();
             Skeletons = (Skeleton[])_formatter.Deserialize(reader.BaseStream);
         }
     }
