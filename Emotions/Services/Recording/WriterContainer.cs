@@ -4,6 +4,7 @@ using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 using Emotions.KinectTools.Writers;
+using Emotions.Modules.Game;
 
 namespace Emotions.Services.Recording
 {

@@ -115,17 +115,15 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FACS\ActionUnits.cs" />
-    <Compile Include="GameFrame.cs" />
+    <Compile Include="Modules\Game\GameFrame.cs" />
+    <Compile Include="Modules\Game\Module.cs" />
     <Compile Include="Modules\Output\Module.cs" />
     <Compile Include="Modules\Output\NLogLogger.cs" />
     <Compile Include="Modules\Output\ShoutingTarget.cs" />
     <Compile Include="MainModule.cs" />
     <Compile Include="Services\Engine\EmotionRecognizer.cs" />
-    <Compile Include="Services\Engine\EngineState.cs" />
-    <Compile Include="Services\Engine\EngineStateChangedEventArgs.cs" />
     <Compile Include="Services\Engine\IEngineService.cs" />
     <Compile Include="Services\Engine\EngineUpdateEventArgs.cs" />
-    <Compile Include="Services\Engine\RecordingProvider.cs" />
     <Compile Include="Services\KinectInput\KinectPlayer.cs" />
     <Compile Include="Services\KinectInput\SourceChangedArgs.cs" />
     <Compile Include="Services\Recording\ReaderContainer.cs" />
@@ -144,7 +142,7 @@
     <Compile Include="Services\Engine\TrainingDataSet.cs" />
     <Compile Include="ViewModels\AUViewModel.cs" />
     <Compile Include="ViewModels\EngineControlViewModel.cs" />
-    <Compile Include="ViewModels\GameViewModel.cs" />
+    <Compile Include="Modules\Game\ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\KinectOutputViewModel.cs" />
     <Compile Include="Modules\Output\ViewModels\OutputViewModel.cs" />
     <Compile Include="Views\AUView.xaml.cs">
@@ -153,7 +151,7 @@
     <Compile Include="Views\EngineControlView.xaml.cs">
       <DependentUpon>EngineControlView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GameView.xaml.cs">
+    <Compile Include="Modules\Game\Views\GameView.xaml.cs">
       <DependentUpon>GameView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\KinectOutputView.xaml.cs">
@@ -189,7 +187,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\GameView.xaml">
+    <Page Include="Modules\Game\Views\GameView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

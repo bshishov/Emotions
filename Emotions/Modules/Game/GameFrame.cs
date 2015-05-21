@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Emotions.KinectTools;
 
-namespace Emotions
+namespace Emotions.Modules.Game
 {
     public class GameFrame : IStreamable
     {

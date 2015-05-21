@@ -3,6 +3,8 @@ using Caliburn.Micro;
 using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
+using Emotions.Modules.Game;
+using Emotions.Modules.Game.ViewModels;
 using Emotions.Services.Engine;
 using Emotions.ViewModels;
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
+using Emotions.Modules.Game;
 using Emotions.Services.Recording;
 
 namespace Emotions.Services.KinectInput

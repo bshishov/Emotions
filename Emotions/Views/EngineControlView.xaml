@@ -6,33 +6,17 @@
              mc:Ignorable="d" 
              Background="White"
              d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.Resources>
-        <Style TargetType="ToggleButton">
-            <Setter Property="Width" Value="50" />
-            <Setter Property="Height" Value="50" />
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="White" Offset="0"/>
-                        <GradientStop Color="LightSteelBlue" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
     <Grid Background="#222">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding RTChecked}" IsEnabled="{Binding RTEnabled, Mode=OneWay}" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" >
+            <TextBlock Foreground="White" Margin="5" Text="{Binding SourceName}" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding IsRunning}" >
                 <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">N</TextBlock>
-            </ToggleButton>
-            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding RecChecked}" IsEnabled="{Binding RecEnabled, Mode=OneWay}">
-                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightCoral" FontSize="40">}</TextBlock>
-            </ToggleButton>
-            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding PlayChecked}" IsEnabled="{Binding PlayEnabled, Mode=OneWay}">
-                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">{</TextBlock>
-            </ToggleButton>
-            <ToggleButton Style="{DynamicResource MetroCircleToggleButtonStyle}" Width="40" Height="40" IsChecked="{Binding PauseChecked}" IsEnabled="{Binding PauseEnabled, Mode=OneWay}">
-                <TextBlock FontFamily="{StaticResource EntypoFont}" Foreground="LightGray" FontSize="40">~</TextBlock>
             </ToggleButton>
         </StackPanel>
     </Grid>

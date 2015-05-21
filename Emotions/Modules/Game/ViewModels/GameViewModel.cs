@@ -9,10 +9,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Caliburn.Micro;
+using Emotions.ViewModels;
 using Gemini.Framework;
 using Gemini.Framework.Services;
 
-namespace Emotions.ViewModels
+namespace Emotions.Modules.Game.ViewModels
 {
     [Export(typeof(GameViewModel))]
     public class GameViewModel : Document

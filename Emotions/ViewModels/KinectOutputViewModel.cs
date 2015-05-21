@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using Caliburn.Micro;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
+using Emotions.Modules.Game.ViewModels;
 using Emotions.Services.Engine;
 using Emotions.Services.Recording;
 using Gemini.Framework;
@@ -89,14 +90,14 @@ namespace Emotions.ViewModels
                 return;
             }
 
-            _engine.Bind(CurrentSource);
+            _engine.Start(CurrentSource);
         }
 
         private void UnbindEngine()
         {
             if (_engine == null)
                 return;
-            _engine.Unbind();
+            _engine.Stop();
         }
         
         public void StartRecording(GameViewModel gameVm = null)
