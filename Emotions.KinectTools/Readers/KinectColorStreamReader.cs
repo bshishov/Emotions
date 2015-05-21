@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -10,7 +9,7 @@ using Microsoft.Kinect;
 
 namespace Emotions.KinectTools.Readers
 {
-    class KinectColorStreamReader : IReader<ColorFrame>
+    public class KinectColorStreamReader : IReader<ColorFrame>
     {
         private VideoFileReader _reader;
         private readonly KinectSourceInfo _info;

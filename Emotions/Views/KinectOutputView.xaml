@@ -29,7 +29,6 @@
         <ToolBar>
             <ComboBox x:Name="ModeSelector" Width="70" ItemsSource="{Binding Source={StaticResource availableModes}}" SelectedIndex="1"></ComboBox>
             <Slider x:Name="OpacitySelector" Width="50" VerticalAlignment="Center" Value="1" Maximum="1" Minimum="0"/>
-            <ToggleButton IsChecked="{Binding IsTrackingEnabled}">Tracking</ToggleButton>
             <ToggleButton x:Name="ShowSkeletonButton">Skeleton</ToggleButton>
             <ToggleButton x:Name="ShowFaceButton" IsChecked="True">Face</ToggleButton>
             <ToggleButton x:Name="ShowEngineButton" IsChecked="{Binding IsEngineEnabled}">Engine</ToggleButton>
@@ -41,7 +40,7 @@
                     <utilities:SkeletonDrawer ZIndex="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                                               ShowFace="{Binding IsChecked, ElementName=ShowFaceButton, Mode=OneWay}"
                                               ShowSkeleton="{Binding IsChecked, ElementName=ShowSkeletonButton, Mode=OneWay}"
-                                              SkeletonFaceTracker="{Binding SkeletonFaceTracker}" Width="640" Height="480"/>
+                                              SkeletonFaceTracker="{Binding SkeletonFaceTracker, Mode=OneWay}" Width="640" Height="480"/>
                     <controls:KinectViewer
                         Kinect="{Binding CurrentSource, Mode=OneTime}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 

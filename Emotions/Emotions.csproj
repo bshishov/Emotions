@@ -115,6 +115,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FACS\ActionUnits.cs" />
+    <Compile Include="GameFrame.cs" />
     <Compile Include="Modules\Output\Module.cs" />
     <Compile Include="Modules\Output\NLogLogger.cs" />
     <Compile Include="Modules\Output\ShoutingTarget.cs" />
@@ -125,14 +126,17 @@
     <Compile Include="Services\Engine\IEngineService.cs" />
     <Compile Include="Services\Engine\EngineUpdateEventArgs.cs" />
     <Compile Include="Services\Engine\RecordingProvider.cs" />
+    <Compile Include="Services\KinectInput\KinectPlayer.cs" />
     <Compile Include="Services\KinectInput\SourceChangedArgs.cs" />
+    <Compile Include="Services\Recording\ReaderContainer.cs" />
+    <Compile Include="Services\Recording\Recorder.cs" />
+    <Compile Include="Services\Recording\WriterContainer.cs" />
     <Compile Include="Utilities\EngineDrawer.cs" />
     <Compile Include="Utilities\GameCanvas.cs" />
     <Compile Include="Utilities\SkeletonDrawer.cs" />
     <Compile Include="Controls\RangedProperty.xaml.cs">
       <DependentUpon>RangedProperty.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\Engine\EngineFrame.cs" />
     <Compile Include="Services\Engine\Recording.cs" />
     <Compile Include="Services\KinectInput\IKinectInputService.cs" />
     <Compile Include="Services\KinectInput\KinectInputService.cs" />

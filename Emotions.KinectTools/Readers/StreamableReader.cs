@@ -1,16 +1,13 @@
 using System.IO;
-using System.Runtime.InteropServices;
-using Emotions.KinectTools.Frames;
 
 namespace Emotions.KinectTools.Readers
 {
-    class KinectSkeletonStreamReader : IReader<SkeletonFrame>
+    public class StreamableReader<T> : IReader<T>
+        where T : IStreamable, new()
     {
         private FileStream _stream;
         private BinaryReader _reader;
         private string _path;
-        private int _frame;
-        private const int FrameDelay = 30;
 
         public bool IsEnded
         {
@@ -30,7 +27,6 @@ namespace Emotions.KinectTools.Readers
 
         private void Init()
         {
-            _frame = 0;
             _stream = File.Open(_path, FileMode.Open);
             _reader = new BinaryReader(_stream);
         }
@@ -46,11 +42,11 @@ namespace Emotions.KinectTools.Readers
             Init();
         }
 
-        public SkeletonFrame Read()
+        public T Read()
         {
-            var frame = new SkeletonFrame(_frame, _frame * FrameDelay);
-            frame.FromStream(_reader);
-            return frame;
+            var data = new T();
+            data.FromStream(_reader);
+            return data;
         }
 
         public void Close()

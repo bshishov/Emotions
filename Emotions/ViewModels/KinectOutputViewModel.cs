@@ -1,12 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using Caliburn.Micro;
-using Emotions.KinectTools;
-using Emotions.KinectTools.Recorders;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 using Emotions.Services.Engine;
+using Emotions.Services.Recording;
 using Gemini.Framework;
+using Gemini.Framework.Results;
+using Gemini.Modules.Shell.Views;
 
 namespace Emotions.ViewModels
 {
@@ -17,8 +18,6 @@ namespace Emotions.ViewModels
         private IKinectSource _currentSource;
         private Recorder _recorder;
         private readonly ILog _log = LogManager.GetLog(typeof(KinectOutputViewModel));
-        private SkeletonTracker _skeletonTracker;
-        private SkeletonFaceTracker _skeletonFaceTracker;
 
         public IKinectSource CurrentSource
         {
@@ -58,40 +57,19 @@ namespace Emotions.ViewModels
                     StartRecording();
                 else
                     StopRecording();
-                NotifyOfPropertyChange(() => IsRecording);
-            }
-        }
-
-        public bool IsTrackingEnabled
-        {
-            get { return _skeletonTracker != null; }
-            set
-            {
-                if(value)
-                    StartTracking();
-                else
-                    StopTracking();
-                NotifyOfPropertyChange(() => IsTrackingEnabled);
             }
         }
         
         public SkeletonFaceTracker SkeletonFaceTracker
         {
-            get { return _skeletonFaceTracker; }
-            set
-            {
-                _skeletonFaceTracker = value;
-                NotifyOfPropertyChange(() => SkeletonFaceTracker);
-            }
+            get { return CurrentSource.SkeletonFaceTracker; }
         }
         
         public bool IsEngineEnabled
         {
             get
             {
-                if (_engine != null && _skeletonFaceTracker != null)
-                    return _engine.ActiveTracker == _skeletonFaceTracker;
-                return false;
+                return _engine != null && _engine.ActiveSource == CurrentSource;
             }
             set
             {
@@ -111,13 +89,7 @@ namespace Emotions.ViewModels
                 return;
             }
 
-            if (_skeletonFaceTracker == null)
-            {
-                _log.Warn("Can't bind engine, face is not tracked");
-                return;
-            }
-
-            _engine.Bind(_skeletonFaceTracker);
+            _engine.Bind(CurrentSource);
         }
 
         private void UnbindEngine()
@@ -126,57 +98,20 @@ namespace Emotions.ViewModels
                 return;
             _engine.Unbind();
         }
-
-        private void StartTracking()
-        {
-            _log.Info("Starting skeleton tracking");
-            _skeletonTracker = new SkeletonTracker(_currentSource);
-            _skeletonTracker.SkeletonTracked += OnSkeletonTracked;
-            _skeletonTracker.SkeletonUnTracked += OnSkeletonUnTracked;
-        }
-
-        private void OnSkeletonTracked(object sender, SkeletonTrackArgs args)
-        {
-            _log.Info("Skeleton tracked");
-            SkeletonFaceTracker = args.SkeletonFaceTracker;
-        }
-
-        private void OnSkeletonUnTracked(object sender, SkeletonTrackArgs args)
-        {
-            _log.Info("Skeleton untracked");
-            SkeletonFaceTracker.Dispose();
-            SkeletonFaceTracker = null;
-        }
-
-        private void StopTracking()
-        {
-            if (SkeletonFaceTracker != null)
-            {
-                SkeletonFaceTracker.Dispose();
-                SkeletonFaceTracker = null;
-            }
-
-            _skeletonTracker.Dispose();
-            _skeletonTracker.SkeletonTracked -= OnSkeletonTracked;
-            _skeletonTracker.SkeletonUnTracked -= OnSkeletonUnTracked;
-            _skeletonTracker = null;
-            _log.Info("Stopped skeleton tracking");
-
-            UnbindEngine();
-        }
         
-        private void StartRecording()
+        public void StartRecording(GameViewModel gameVm = null)
         {
             if (_currentSource != null)
             {
-                var path = string.Format("kinect{0}.rec", DateTime.Now.ToString("yyyyMMddHHmmssfff"));
-                _recorder = new Recorder(_currentSource, path);
+                var path = string.Format("kinect{0}.rec", DateTime.Now.ToString("yyyyMMddHHmmss"));
+                _recorder = new Recorder(_currentSource, gameVm, path);
                 _recorder.Start();
                 _log.Info("Recording started: {0}", path);
             }
+            NotifyOfPropertyChange(() => IsRecording);
         }
 
-        private void StopRecording()
+        public void StopRecording()
         {
             if (_recorder != null)
             {
@@ -185,6 +120,7 @@ namespace Emotions.ViewModels
                 _recorder = null;
                 _log.Info("Recording finished");
             }
+            NotifyOfPropertyChange(() => IsRecording);
         }
         
         public KinectOutputViewModel(IKinectSource source)
@@ -232,8 +168,6 @@ namespace Emotions.ViewModels
         {
             if(IsRecording)
                 StopRecording();
-            if (IsTrackingEnabled)
-                StopTracking();
 
             if (_currentSource != null)
             {
@@ -241,7 +175,5 @@ namespace Emotions.ViewModels
                 _currentSource.Dispose();
             }
         }
-        
-       
     }
 }

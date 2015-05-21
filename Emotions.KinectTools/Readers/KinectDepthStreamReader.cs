@@ -8,7 +8,7 @@ using Emotions.KinectTools.Sources;
 
 namespace Emotions.KinectTools.Readers
 {
-    class KinectDepthStreamReader : IReader<DepthFrame>
+    public class KinectDepthStreamReader : IReader<DepthFrame>
     {
         private VideoFileReader _reader;
         private readonly KinectSourceInfo _info;

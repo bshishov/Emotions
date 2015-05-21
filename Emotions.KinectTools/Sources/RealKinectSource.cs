@@ -1,28 +1,56 @@
 ﻿using System;
 using Emotions.KinectTools.Frames;
+using Emotions.KinectTools.Tracking;
 using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit.FaceTracking;
 using SkeletonFrame = Microsoft.Kinect.SkeletonFrame;
 
 namespace Emotions.KinectTools.Sources
 {
     public class RealKinectSource : IKinectSource
     {
-        private byte[] _colorImage;
-        private ColorImageFormat _colorImageFormat = ColorImageFormat.Undefined;
-        private short[] _depthImage;
-        private DepthImageFormat _depthImageFormat = DepthImageFormat.Undefined;
-
-        private Skeleton[] _skeletonData;
         private readonly KinectSensor _sensor;
+        
+        private byte[] _colorImage;
+        private short[] _depthImage;
+        private Skeleton[] _skeletonData;
 
+        private ColorImageFormat _colorImageFormat = ColorImageFormat.Undefined;
+        private DepthImageFormat _depthImageFormat = DepthImageFormat.Undefined;
+        private SkeletonTracker _skeletonTracker;
+
+        public event Action<IKinectSource, FramesContainer> FramesReady;
+        public event Action<IKinectSource, EngineFrame> EngineFrameReady;
         public event Action<IKinectSource> Started;
         public event Action<IKinectSource> Stopped;
+
         public string Name { get { return "Kinect Sensor"; } }
+
         public bool IsActive { get { return _sensor.IsRunning; } }
-        public event Action<IKinectSource, FramesContainer> FramesReady;
-        
 
         public KinectSourceInfo Info { get; private set; }
+
+        public SkeletonFaceTracker SkeletonFaceTracker { get; private set; }
+        
+        public RealKinectSource()
+        {
+            if (KinectSensor.KinectSensors.Count > 0)
+            {
+                _sensor = KinectSensor.KinectSensors[0];
+                try
+                {
+                    InitSensor();
+                    Start();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+                throw new Exception("No kinect sensors detected");
+            Info = new KinectSourceInfo(_sensor);
+        }
 
         public void Start()
         {
@@ -32,8 +60,10 @@ namespace Emotions.KinectTools.Sources
             if (!_sensor.IsRunning)
             {
                 _sensor.Start();
+                _sensor.AllFramesReady += SensorOnAllFramesReady;
                 if (Started != null)
                     Started(this);
+                StartTracking();
             }
         }
 
@@ -43,29 +73,51 @@ namespace Emotions.KinectTools.Sources
                 throw new Exception("No sensor");
             
             _sensor.Stop();
+            StopTracking();
             if (Stopped != null)
                 Stopped(this);
         }
 
-        public RealKinectSource()
+        private void StartTracking()
         {
-            if (KinectSensor.KinectSensors.Count > 0)
+            _skeletonTracker = new SkeletonTracker(this);
+            _skeletonTracker.SkeletonTracked += OnSkeletonTracked;
+            _skeletonTracker.SkeletonUnTracked += OnSkeletonUnTracked;
+        }
+
+        private void StopTracking()
+        {
+            if (SkeletonFaceTracker != null)
             {
-                _sensor = KinectSensor.KinectSensors[0];
-                try
-                {
-                    InitSensor();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                SkeletonFaceTracker.Dispose();
+                SkeletonFaceTracker = null;
             }
-            else
-                throw new Exception("No kinect sensors detected");
-            
-            Info = new KinectSourceInfo(_sensor);
-            _sensor.AllFramesReady += SensorOnAllFramesReady;
+
+            _skeletonTracker.Dispose();
+            _skeletonTracker.SkeletonTracked -= OnSkeletonTracked;
+            _skeletonTracker.SkeletonUnTracked -= OnSkeletonUnTracked;
+            _skeletonTracker = null;
+        }
+
+        private void OnSkeletonTracked(object sender, SkeletonTrackArgs args)
+        {
+            SkeletonFaceTracker = args.SkeletonFaceTracker;
+            SkeletonFaceTracker.TrackSucceed += SkeletonFaceTrackerOnTrackSucceed;
+        }
+       
+        private void OnSkeletonUnTracked(object sender, SkeletonTrackArgs args)
+        {
+            if (SkeletonFaceTracker != null)
+            {
+                SkeletonFaceTracker.Dispose();
+                SkeletonFaceTracker = null;
+            }
+        }
+
+        private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame, Skeleton skeleton)
+        {
+            if(EngineFrameReady != null)   
+                EngineFrameReady.Invoke(this, EngineFrame.FromFaceTrackFrame(frame, skeleton));
         }
         
         private void InitSensor()
@@ -102,8 +154,6 @@ namespace Emotions.KinectTools.Sources
                 // comes back.
                 throw;
             }
-
-            _sensor.Start();
         }
 
         private void SensorOnAllFramesReady(object sender, AllFramesReadyEventArgs e)

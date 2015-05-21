@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using Emotions.KinectTools.Tracking;
 using Emotions.Services.Engine;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 

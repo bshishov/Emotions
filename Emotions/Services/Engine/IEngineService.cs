@@ -1,5 +1,4 @@
-﻿using Emotions.KinectTools;
-using Emotions.KinectTools.Tracking;
+﻿using Emotions.KinectTools.Sources;
 
 namespace Emotions.Services.Engine
 {
@@ -9,14 +8,14 @@ namespace Emotions.Services.Engine
         event Engine.EngineStateChangedHandler OnEngineStateChanged;
         EngineState CurrentState { get; }
         Recording Recording { get; }
-        SkeletonFaceTracker ActiveTracker { get; }
+        IKinectSource ActiveSource{ get; }
         void Start();
         void StartPlaying();
         void LoadRecording(Recording recording);
         void StartRecording();
         void StopRecording();
         void Stop();
-        void Bind(SkeletonFaceTracker skeletonFaceTracker);
+        void Bind(IKinectSource source);
         void Unbind();
     }
 }

@@ -3,10 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Emotions.KinectTools;
 using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
-using Microsoft.Kinect;
 
 namespace Emotions.Controls
 {

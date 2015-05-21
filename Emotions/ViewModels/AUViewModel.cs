@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Caliburn.Micro;
+using Emotions.KinectTools.Tracking;
 using Emotions.Services.Engine;
 using Emotions.Views;
 using Gemini.Framework;

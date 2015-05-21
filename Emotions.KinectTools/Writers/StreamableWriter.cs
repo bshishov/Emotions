@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using Emotions.KinectTools.Frames;
 
 namespace Emotions.KinectTools.Writers
 {
-    class KinectSkeletonStreamWriter : IWriter<SkeletonFrame>
+    public class StreamableWriter<T> : IWriter<T>
+        where T : IStreamable
     {
         private FileStream _stream;
         private BinaryWriter _writer;
@@ -17,9 +17,9 @@ namespace Emotions.KinectTools.Writers
             _writer = new BinaryWriter(_stream);
         }
 
-        public void Write(SkeletonFrame colorFrame)
+        public void Write(T data)
         {
-            colorFrame.ToStream(_writer);
+            data.ToStream(_writer);
         }
 
         public void Close()

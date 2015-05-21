@@ -8,7 +8,7 @@ using Emotions.KinectTools.Sources;
 
 namespace Emotions.KinectTools.Writers
 {
-    class KinectDepthStreamWriter : IWriter<DepthFrame>
+    public class KinectDepthStreamWriter : IWriter<DepthFrame>
     {
         private VideoFileWriter _writer;
         private readonly KinectSourceInfo _info;
@@ -26,7 +26,7 @@ namespace Emotions.KinectTools.Writers
         public void Open(string path)
         {
             _writer = new VideoFileWriter();
-            _writer.Open(path, _info.DepthFrameWidth, _info.DepthFrameHeight, 30, VideoCodec.MPEG4, 120 * 1000 * 1000);
+            _writer.Open(path, _info.DepthFrameWidth, _info.DepthFrameHeight, 30, VideoCodec.MSMPEG4v3, 120 * 1000 * 1000);
             Path = path;
         }
 

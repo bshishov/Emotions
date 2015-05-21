@@ -3,19 +3,23 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Emotions.KinectTools.Frames;
-using Emotions.KinectTools.Readers;
+using Emotions.KinectTools.Sources;
+using Emotions.KinectTools.Tracking;
+using Emotions.Services.Recording;
 
-namespace Emotions.KinectTools.Sources
+namespace Emotions.Services.KinectInput
 {
     public class KinectPlayer : IKinectSource
     {
         private CancellationTokenSource _cancellationTokenSource;
         private ReaderContainer _reader;
-        private long _time;
         private CancellationToken _token;
-        
+
+        public SkeletonFaceTracker SkeletonFaceTracker { get; private set; }
         public string Name { get; private set; }
         public event Action<IKinectSource, FramesContainer> FramesReady;
+        public event Action<IKinectSource, EngineFrame> EngineFrameReady;
+        public event Action<IKinectSource, GameFrame> GameFrameReady;
         public event Action<IKinectSource> Started;
         public event Action<IKinectSource> Stopped;
         public KinectSourceInfo Info { get; private set; }
@@ -23,7 +27,6 @@ namespace Emotions.KinectTools.Sources
         public KinectPlayer(string path)
         {
             _reader = new ReaderContainer();
-            KinectSourceInfo info;
             _reader.Open(path);
             Info = _reader.Info;
             Name = Path.GetFileName(_reader.Path);
@@ -31,7 +34,6 @@ namespace Emotions.KinectTools.Sources
 
         public void Start()
         {
-            _time = 0;
             _reader.Reset();
             _cancellationTokenSource = new CancellationTokenSource();
             _token = _cancellationTokenSource.Token;
@@ -51,26 +53,37 @@ namespace Emotions.KinectTools.Sources
         private void UpdateTask(object o)
         {
             var reader = o as ReaderContainer;
+            var lastTime = 0;
             if(reader == null)
                 throw new Exception("No binary reader specified");
             while (!(reader.IsEnded || _token.IsCancellationRequested))
             {
-                var frames = _reader.Read();
+                int time;
+                var frame = _reader.ReadNextFrame(out time);
+                Thread.Sleep(Math.Abs(time - lastTime) + 1);
+                lastTime = time;
 
-                if (_time == 0)
-                    _time = frames.ColorFrame.TimeStamp;
-                
-                Thread.Sleep((int)(frames.ColorFrame.TimeStamp - _time));
+                if (frame is FramesContainer)
+                {
+                    if (FramesReady != null)
+                        FramesReady(this, (FramesContainer)frame);
+                }
 
-                _time = frames.ColorFrame.TimeStamp;
+                if (frame is EngineFrame)
+                {
+                    if (EngineFrameReady != null)
+                        EngineFrameReady(this, (EngineFrame)frame);
+                }
 
-                if(FramesReady != null)
-                    FramesReady(this, frames);
+                if (frame is GameFrame)
+                {
+                    if (GameFrameReady != null)
+                        GameFrameReady(this, (GameFrame)frame);
+                }
             }
             IsActive = false;
             if (Stopped != null)
                 Stopped(this);
-            reader.Close();
         }
 
         public void Dispose()

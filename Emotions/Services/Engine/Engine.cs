@@ -5,10 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using Emotions.KinectTools;
+using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
-using Microsoft.Kinect;
-using Microsoft.Kinect.Toolkit.FaceTracking;
+using Emotions.Services.KinectInput;
 
 namespace Emotions.Services.Engine
 {
@@ -43,7 +42,7 @@ namespace Emotions.Services.Engine
 
         public Recording Recording { get; private set; }
 
-        public SkeletonFaceTracker ActiveTracker { get; private set; }
+        public IKinectSource ActiveSource { get; private set; }
 
         public Engine()
         {
@@ -223,67 +222,48 @@ namespace Emotions.Services.Engine
             return (EngineFrame)_lastInput.Clone();
         }
 
-        public void Bind(SkeletonFaceTracker skeletonFaceTracker)
+        public void Bind(IKinectSource source)
         {
-            if(ActiveTracker != null)
-                ActiveTracker.TrackSucceed -= OnTrackerFrame;
-            ActiveTracker = skeletonFaceTracker;
-            ActiveTracker.TrackSucceed += OnTrackerFrame;
+            if(ActiveSource != null)
+                ActiveSource.EngineFrameReady -= EngineFrameReady;
+            ActiveSource = source;
+            ActiveSource.EngineFrameReady += EngineFrameReady;
+
+            var player = ActiveSource as KinectPlayer;
+            if (player != null)
+                player.GameFrameReady += OnGameFrameReady;
+        }
+
+        private void OnGameFrameReady(IKinectSource kinectSource, GameFrame gameFrame)
+        {
+            _log.Info("Gameframe received");
+        }
+
+        private void EngineFrameReady(IKinectSource source, EngineFrame frame)
+        {
+            if(ActiveSource != source)
+                throw new Exception("Source is unbinded");
+            ProceedInput(frame);
         }
 
         public void Unbind()
         {
-            if (ActiveTracker != null)
-                ActiveTracker.TrackSucceed -= OnTrackerFrame;
-        }
-
-        private void OnTrackerFrame(object sender, FaceTrackFrame faceFrame, Skeleton skeleton)
-        {
-            var au = faceFrame.GetAnimationUnitCoefficients();
-            var featurepoints = faceFrame.Get3DShape();
-            var points = new EngineFrame.Point3[featurepoints.Count];
-            for (var i = 0; i < featurepoints.Count; i++)
+            if (ActiveSource != null)
             {
-                points[i] = new EngineFrame.Point3()
-                {
-                    X = featurepoints[i].X,
-                    Y = featurepoints[i].Y,
-                    Z = featurepoints[i].Z
-                };
+                ActiveSource.EngineFrameReady -= EngineFrameReady;
+
+                var player = ActiveSource as KinectPlayer;
+                if (player != null)
+                    player.GameFrameReady -= OnGameFrameReady;
             }
-
-            var frame = new EngineFrame()
-            {
-                FeaturePoints = points,
-                LipRaiser = au[AnimationUnit.LipRaiser],
-                JawLowerer = au[AnimationUnit.JawLower],
-                LipStretcher = au[AnimationUnit.LipStretcher],
-                BrowLowerer = au[AnimationUnit.BrowLower],
-                LipCornerDepressor = au[AnimationUnit.LipCornerDepressor],
-                BrowRaiser = au[AnimationUnit.BrowRaiser],
-                FacePosition = new EngineFrame.Point3()
-                {
-                    X = faceFrame.Translation.X,
-                    Y = faceFrame.Translation.Y,
-                    Z = faceFrame.Translation.Z,
-                },
-                FaceRotation = new EngineFrame.Point3()
-                {
-                    X = faceFrame.Rotation.X,
-                    Y = faceFrame.Rotation.Y,
-                    Z = faceFrame.Rotation.Z,
-                },
-            };
-            
-            ProceedInput(frame);
         }
 
         public void Dispose()
         {
-            if (ActiveTracker != null)
+            if (ActiveSource != null)
             {
-                ActiveTracker.TrackSucceed -= OnTrackerFrame;
-                ActiveTracker = null;
+                Unbind();
+                ActiveSource = null;
             }
         }
     }

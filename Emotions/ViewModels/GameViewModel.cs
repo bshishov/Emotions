@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
+using Caliburn.Micro;
 using Gemini.Framework;
+using Gemini.Framework.Services;
 
 namespace Emotions.ViewModels
 {
     [Export(typeof(GameViewModel))]
-    class GameViewModel : Document
+    public class GameViewModel : Document
     {
         class Circle
         {
+            public readonly DateTime CreationTime;
             public int TTL;
             public readonly bool IsGood;
             public readonly Ellipse Ellipse;
 
             public Circle(Ellipse ellipse, int ttl, bool isgood)
             {
+                CreationTime = DateTime.Now;
                 Ellipse = ellipse;
                 TTL = ttl;
                 IsGood = isgood;
@@ -37,20 +38,40 @@ namespace Emotions.ViewModels
             }
         }
 
+        public event Action<GameViewModel, GameFrame> FrameReady;
+
         private Canvas _canvas;
         private bool _autoRec;
         private readonly Random _random;
         private int _scored;
         private int _failed;
         private int _missed;
+        private int _missclicks;
+        private int _reactionTime;
+        private readonly List<Circle> _circles = new List<Circle>();
+        private readonly ILog _log = LogManager.GetLog(typeof(GameViewModel));
+        private int _frame;
+        private KinectOutputViewModel _kinectVm;
+
+        // GAME PARAMS
         private const int MinSize = 50;
         private const int MaxSize = 200;
         private const int StartDelay= 700;
         private const int TargetDelay = 150;
-        private const int TTL = 1300;
+        private const int TTL = 1300; // Time to live in ms
         private const double GoodCirclePropability = 0.5;
-        private const long TargetTime = 60 * 5 * 1000;
-        private List<Circle> _circles = new List<Circle>();
+        private const long TargetTime = 1 * 60 * 1000; // minutes * (sec/min) * (ms / min)
+
+
+        public int Missclicks
+        {
+            get { return _missclicks; }
+            set
+            {
+                _missclicks = value;
+                NotifyOfPropertyChange(() => Missclicks);
+            }
+        }
 
         public int Missed
         {
@@ -82,6 +103,16 @@ namespace Emotions.ViewModels
             }
         }
 
+        public int ReactionTime
+        {
+            get { return _reactionTime; }
+            set
+            {
+                _reactionTime = value;
+                NotifyOfPropertyChange(() => ReactionTime);
+            }
+        }
+
         public bool AutoRec
         {
             get { return _autoRec; }
@@ -108,11 +139,27 @@ namespace Emotions.ViewModels
             Scored = 0;
             Failed = 0;
             Missed = 0;
+            Missclicks = 0;
+            ReactionTime = 0;
+            _frame = 0;
+
+            if (AutoRec)
+            {
+                var shell = IoC.Get<IShell>();
+                var kinectVm = shell.Documents.FirstOrDefault(
+                            d => d is KinectOutputViewModel && ((KinectOutputViewModel) d).IsEngineEnabled);
+                if (kinectVm == null)
+                {
+                    _log.Warn("Can't start recording, no active kinect viewers with engine tracking found");
+                    return;
+                }
+                _kinectVm = (KinectOutputViewModel) kinectVm;
+                _kinectVm.StartRecording(this);
+            }
 
             Task.Factory.StartNew(UpdateCycle);
         }
-
-
+        
         private void SpawnCircle()
         {
             var isGood = _random.NextDouble() < GoodCirclePropability;
@@ -149,6 +196,9 @@ namespace Emotions.ViewModels
                 Thread.Sleep(spawnDelay);
                 startFrameTime = startFrameTime.Add(TimeSpan.FromMilliseconds(delta));
             }
+
+            if (_kinectVm != null && _kinectVm.IsRecording)
+                _kinectVm.StopRecording();
         }
 
         private void UpdateCircles(double progress, int delta)
@@ -159,7 +209,11 @@ namespace Emotions.ViewModels
                 if (circle.TTL < 0)
                 {
                     if (circle.IsGood)
+                    {
                         Missed++;
+                        if (FrameReady != null)
+                            FrameReady(this, GetFrame());
+                    }
                     _canvas.Children.Remove(circle.Ellipse);
                     _circles.Remove(circle);
                 }
@@ -177,9 +231,34 @@ namespace Emotions.ViewModels
                 else
                     Failed += 1;
 
+                ReactionTime = DateTime.Now.Subtract(circle.CreationTime).Milliseconds;
+
                 _canvas.Children.Remove(circle.Ellipse);
                 _circles.Remove(circle);
             }
+            else
+            {
+                Missclicks += 1;
+            }
+
+            if (FrameReady != null)
+                FrameReady(this, GetFrame());
+        }
+
+        private GameFrame GetFrame()
+        {
+            var frame = new GameFrame()
+            {
+                Missed = Missed,
+                FrameNumber = _frame++,
+                Missclicks = Missclicks,
+                Failed = Failed,
+                ReactionTime = ReactionTime,
+                Scored = Scored,
+                Time = DateTime.Now.Ticks
+            };
+
+            return frame;
         }
     }
 }

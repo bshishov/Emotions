@@ -7,7 +7,7 @@ using Emotions.KinectTools.Sources;
 
 namespace Emotions.KinectTools.Writers
 {
-    class KinectColorStreamWriter : IWriter<ColorFrame>
+    public class KinectColorStreamWriter : IWriter<ColorFrame>
     {
         private VideoFileWriter _writer;
         private readonly KinectSourceInfo _info;
@@ -24,7 +24,7 @@ namespace Emotions.KinectTools.Writers
         public void Open(string path)
         {
             _writer = new VideoFileWriter();
-            _writer.Open(path, _info.ColorFrameWidth, _info.ColorFrameHeight, 30, VideoCodec.MPEG4, 40 * 1000 * 1000);
+            _writer.Open(path, _info.ColorFrameWidth, _info.ColorFrameHeight, 30, VideoCodec.MSMPEG4v3, 120 * 1000 * 1000);
             Path = path;
         }
 

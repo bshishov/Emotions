@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using Caliburn.Micro;
+using Emotions.KinectTools.Tracking;
 using Emotions.Services.Engine;
 
 namespace Emotions.Utilities

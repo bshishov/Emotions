@@ -2,7 +2,7 @@
 
 namespace Emotions.KinectTools.Readers
 {
-    interface IReader<out T> : IDisposable
+    public interface IReader<out T> : IDisposable
     {
         bool IsEnded { get; }
         void Open(string path);
