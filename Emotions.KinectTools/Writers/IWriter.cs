@@ -6,7 +6,7 @@ namespace Emotions.KinectTools.Writers
     {
         string Path { get; }
         void Open(string path);
-        void Write(T data);
+        void Write(T inputFrame);
         void Close();
     }
 }

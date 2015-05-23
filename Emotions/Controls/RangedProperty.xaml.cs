@@ -1,112 +1,21 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
-namespace Emotions
+namespace Emotions.Controls
 {
     /// <summary>
     /// Interaction logic for RangedProperty.xaml
     /// </summary>
     public partial class RangedProperty : UserControl
     {
-        class TimeLineDrawer
-        {
-            public WriteableBitmap Output { get { return _output; } }
-
-            private WriteableBitmap _output;
-            private const int Height = 200;
-            private const int Width = 200;
-            private int bytesPerPixel;
-            private int stride;
-            private int arraySize;
-            private byte[] colorArray;
-            private Int32Rect rect;
-            private Color PositiveColor = Colors.MediumSeaGreen;
-            private Color NegativeColor = Colors.MediumSeaGreen;
-            private Color PositiveBackground = Colors.White;
-            private Color NegativeBackground = Colors.LightGray;
-
-            public TimeLineDrawer()
-            {
-                _output = new WriteableBitmap(Width, Height, 96, 96, PixelFormats.Bgr32, null);
-                bytesPerPixel = (_output.Format.BitsPerPixel + 7) / 8;
-                stride = _output.PixelWidth * bytesPerPixel;
-                arraySize = stride * _output.PixelHeight;
-                colorArray = new byte[arraySize];
-                for (var i = 0; i < arraySize; i++)
-                    colorArray[i] = 255;
-                rect = new Int32Rect(0, 0, _output.PixelWidth, _output.PixelHeight);
-            }
-
-            public void Update(double value)
-            {
-                //Shift
-                for (var i = 0; i < Width - 1; i++)
-                    for (var j = 0; j < Height; j++)
-                    {
-                        colorArray[(i * Height + j)*bytesPerPixel + 0] =
-                            colorArray[(i * Height + j + 1) * bytesPerPixel + 0];
-
-                        colorArray[(i * Height + j) * bytesPerPixel + 1] =
-                            colorArray[(i * Height + j + 1) * bytesPerPixel + 1];
-
-                        colorArray[(i * Height + j) * bytesPerPixel + 2] =
-                            colorArray[(i * Height + j + 1) * bytesPerPixel + 2];
-
-                        colorArray[(i * Height + j) * bytesPerPixel + 3] =
-                            colorArray[(i * Height + j + 1) * bytesPerPixel + 3];
-                    }
-
-                var lastCol = Width - 1;
-                var pixelHeight = (int)((1 - value) * Height);
-                var halfHeight = Height/2;
-
-                for (var j = 0; j < halfHeight; j++)
-                {
-                    colorArray[GetOffset(j, lastCol) + 0] = PositiveBackground.R;
-                    colorArray[GetOffset(j, lastCol) + 1] = PositiveBackground.G;
-                    colorArray[GetOffset(j, lastCol) + 2] = PositiveBackground.B;
-
-                    if (j > pixelHeight)
-                    {
-                        colorArray[GetOffset(j, lastCol) + 0] = PositiveColor.R;
-                        colorArray[GetOffset(j, lastCol) + 1] = PositiveColor.G;
-                        colorArray[GetOffset(j, lastCol) + 2] = PositiveColor.B;
-                    }
-                }
-
-                for (var j = halfHeight; j < Height; j++)
-                {
-                    colorArray[GetOffset(j, lastCol) + 0] = NegativeBackground.R;
-                    colorArray[GetOffset(j, lastCol) + 1] = NegativeBackground.G;
-                    colorArray[GetOffset(j, lastCol) + 2] = NegativeBackground.B;
-
-                    if (j < pixelHeight)
-                    {
-                        colorArray[GetOffset(j, lastCol) + 0] = NegativeColor.R;
-                        colorArray[GetOffset(j, lastCol) + 1] = NegativeColor.G;
-                        colorArray[GetOffset(j, lastCol) + 2] = NegativeColor.B;
-                    }
-                }
-
-                _output.WritePixels(rect, colorArray, stride, 0);
-            }
-
-            private int GetOffset(int row, int col)
-            {
-                return (row * Height + col) * bytesPerPixel;
-            }
-        }
+        private const int PointsCount = 100;
 
         public static readonly DependencyProperty CaptionProperty = DependencyProperty.Register("Caption",
             typeof(string), typeof(RangedProperty), new PropertyMetadata(
                 default(string), (o, args) => ((RangedProperty) o).OnCaptionChanged((string) args.OldValue, (string) args.NewValue)));
-
-        private readonly TimeLineDrawer _timeLineDrawer;
-
+        
         private void OnCaptionChanged(string oldValue, string newValue)
         {
             CaptionLabel.Content = newValue;
@@ -151,7 +60,19 @@ namespace Emotions
         private void OnValueChanged(double oldValue, double newValue)
         {
             ValueLabel.Content = String.Format("{0:0.####}", newValue);
-            _timeLineDrawer.Update((newValue - Min) / (Max - Min));
+
+            for (var i = 0; i < PointsCount - 1; i++)
+            {
+                var point = Graph.Points[i];
+                point.Y = Graph.Points[i + 1].Y;
+                Graph.Points[i] = point;
+            }
+            
+            var val = (newValue - Min)/(Max - Min);
+            var lastPoint = Graph.Points[PointsCount - 1];
+            lastPoint.Y = (1 - val) * GraphCanvas.Height;
+            Graph.Points[PointsCount - 1] = lastPoint;
+
             UpdateValueRect();
         }
 
@@ -194,8 +115,13 @@ namespace Emotions
         public RangedProperty()
         {
             InitializeComponent();
-            _timeLineDrawer = new TimeLineDrawer();
-            TimeLineImage.Source = _timeLineDrawer.Output;
+            Graph.Points = new PointCollection();
+
+            var xScale = GraphCanvas.Width / PointsCount;
+            var halfHeight = GraphCanvas.Height / 2;
+
+            for (var i = 0; i < PointsCount; i++)
+                Graph.Points.Add(new Point(i * xScale, halfHeight));
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)

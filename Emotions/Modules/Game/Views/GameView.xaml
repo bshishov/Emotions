@@ -3,23 +3,42 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:utilities="clr-namespace:Emotions.Utilities"
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style TargetType="Canvas" x:Key="MouseOverCursor">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Viewbox>
-            <utilities:GameCanvas 
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              cal:Message.Attach="
-                                    [Event Loaded] = [Action OnCanvasLoaded($source, $dataContext)];
-                                    [Event MouseLeftButtonUp] = [Action OnCanvasMouseLeftButtonUp($eventArgs)]" 
-                              Width="800" Height="800"/>
+        <StackPanel ZIndex="100" 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" 
+                    Visibility="{Binding ShowScoreboard, Mode=OneWay, Converter={StaticResource BoolToVisibility}, FallbackValue=Visible}" >
+            <TextBlock FontSize="24" HorizontalAlignment="Center" >Your score:</TextBlock>
+            <TextBlock FontSize="72" HorizontalAlignment="Center" Text="{Binding TotalScore,Mode=OneWay, FallbackValue=70}" />
+        </StackPanel>
+        <Viewbox Grid.Row="0" Grid.Column="0">
+            <Canvas 
+                Style="{StaticResource MouseOverCursor}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                cal:Message.Attach="
+                    [Event Loaded] = [Action OnCanvasLoaded($source, $dataContext)];
+                    [Event MouseLeftButtonUp] = [Action OnCanvasMouseLeftButtonUp($eventArgs)]" 
+                Width="800" Height="800">
+                <!-- BACKGROUND -->
+                <!-- <Rectangle Width="800" Height="800" Fill="White"/>-->
+            </Canvas>
         </Viewbox>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
             <Button VerticalAlignment="Center" cal:Message.Attach="[Event Click] = [Action OnStartClicked()]" Margin="5" Padding="2">Start</Button>

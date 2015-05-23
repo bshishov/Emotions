@@ -17,9 +17,9 @@ namespace Emotions.KinectTools.Writers
             _writer = new BinaryWriter(_stream);
         }
 
-        public void Write(T data)
+        public void Write(T inputFrame)
         {
-            data.ToStream(_writer);
+            inputFrame.ToStream(_writer);
         }
 
         public void Close()

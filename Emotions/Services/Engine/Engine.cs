@@ -14,14 +14,12 @@ namespace Emotions.Services.Engine
     class Engine : IEngineService, IDisposable
     {
         private CancellationTokenSource _tokenSource;
-        private Task _task;
         private const int FrameDelay = 1000 / 10; // 1000milliseconds / frames per second
-        private EngineFrame _inputBuffer;
+        private EngineInputFrame _inputBuffer;
         private readonly ILog _log = LogManager.GetLog(typeof(Engine));
         private IKinectSource _source;
 
-        public delegate void UpdateHandler(object sender, EngineUpdateEventArgs args);
-        public event UpdateHandler OnUpdate;
+        public event Action<IEngineService, EngineInputFrame> Updated;
         public event Action<IEngineService, IKinectSource> SourceChanged;
 
         public IKinectSource ActiveSource
@@ -42,16 +40,16 @@ namespace Emotions.Services.Engine
             _log.Info("Engine initialized");
         }
 
-        private void ProceedInput(EngineFrame input)
+        private void ProceedInput(EngineInputFrame input)
         {
             _inputBuffer = input;
         }
 
         public void Start(IKinectSource source)
         {
-            _inputBuffer = new EngineFrame();
+            _inputBuffer = new EngineInputFrame();
             _tokenSource = new CancellationTokenSource();
-            _task = Task.Factory.StartNew(() => UpdateTask(_tokenSource.Token), _tokenSource.Token);
+            Task.Factory.StartNew(() => UpdateTask(_tokenSource.Token), _tokenSource.Token);
 
             if (ActiveSource != null)
                 ActiveSource.EngineFrameReady -= EngineFrameReady;
@@ -97,12 +95,10 @@ namespace Emotions.Services.Engine
             _log.Info("Update task finished. Exiting");
         }
 
-        private void Update(EngineFrame engineFrame)
+        private void Update(EngineInputFrame engineInputFrame)
         {
-            if (OnUpdate != null)
-            {
-                OnUpdate(this, new EngineUpdateEventArgs((EngineFrame)engineFrame.Clone()));
-            }
+            if (Updated != null)
+                Updated(this, (EngineInputFrame)engineInputFrame.Clone());
         }
         
         private void OnGameFrameReady(IKinectSource kinectSource, GameFrame gameFrame)
@@ -110,11 +106,11 @@ namespace Emotions.Services.Engine
             _log.Info("Gameframe received");
         }
 
-        private void EngineFrameReady(IKinectSource source, EngineFrame frame)
+        private void EngineFrameReady(IKinectSource source, EngineInputFrame inputFrame)
         {
             if(ActiveSource != source)
                 throw new Exception("Source is unbinded");
-            ProceedInput(frame);
+            ProceedInput(inputFrame);
         }
         
         public void Dispose()

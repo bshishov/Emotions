@@ -19,7 +19,7 @@ namespace Emotions.Services.KinectInput
         public SkeletonFaceTracker SkeletonFaceTracker { get; private set; }
         public string Name { get; private set; }
         public event Action<IKinectSource, FramesContainer> FramesReady;
-        public event Action<IKinectSource, EngineFrame> EngineFrameReady;
+        public event Action<IKinectSource, EngineInputFrame> EngineFrameReady;
         public event Action<IKinectSource, GameFrame> GameFrameReady;
         public event Action<IKinectSource> Started;
         public event Action<IKinectSource> Stopped;
@@ -70,10 +70,10 @@ namespace Emotions.Services.KinectInput
                         FramesReady(this, (FramesContainer)frame);
                 }
 
-                if (frame is EngineFrame)
+                if (frame is EngineInputFrame)
                 {
                     if (EngineFrameReady != null)
-                        EngineFrameReady(this, (EngineFrame)frame);
+                        EngineFrameReady(this, (EngineInputFrame)frame);
                 }
 
                 if (frame is GameFrame)

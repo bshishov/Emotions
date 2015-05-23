@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using Emotions.KinectTools.Sources;
 using Emotions.Services.Engine;
 using Gemini.Framework;

@@ -10,13 +10,13 @@ namespace Emotions.Services.Recording
 {
     class WriterContainer : 
         IWriter<FramesContainer>,
-        IWriter<EngineFrame>,
+        IWriter<EngineInputFrame>,
         IWriter<GameFrame>
     {
         private IWriter<ColorFrame> _colorWriter;
         private IWriter<DepthFrame> _depthWriter;
         private IWriter<SkeletonFrame> _skeletonWriter;
-        private IWriter<EngineFrame> _engineWriter;
+        private IWriter<EngineInputFrame> _engineWriter;
         private IWriter<GameFrame> _gameWriter;
 
         private FileStream _stream;
@@ -31,7 +31,7 @@ namespace Emotions.Services.Recording
             _colorWriter = new KinectColorStreamWriter(info);
             _depthWriter = new KinectDepthStreamWriter(info);
             _skeletonWriter = new StreamableWriter<SkeletonFrame>();
-            _engineWriter = new StreamableWriter<EngineFrame>();
+            _engineWriter = new StreamableWriter<EngineInputFrame>();
             _gameWriter = new StreamableWriter<GameFrame>();
         }
 
@@ -80,24 +80,33 @@ namespace Emotions.Services.Recording
             _writer.Write(time);
         }
 
-        public void Write(FramesContainer frames)
+        public void Write(FramesContainer inputFrame)
         {
-            WriteTimeStamp(0);
-            _colorWriter.Write(frames.ColorFrame);
-            _depthWriter.Write(frames.DepthFrame);
-            _skeletonWriter.Write(frames.SkeletonFrame);
+            if (_writer.BaseStream.CanWrite)
+            {
+                WriteTimeStamp(0);
+                _colorWriter.Write(inputFrame.ColorFrame);
+                _depthWriter.Write(inputFrame.DepthFrame);
+                _skeletonWriter.Write(inputFrame.SkeletonFrame);
+            }
         }  
 
-        public void Write(EngineFrame frame)
+        public void Write(EngineInputFrame inputFrame)
         {
-            WriteTimeStamp(1);
-            _engineWriter.Write(frame);
+            if (_writer.BaseStream.CanWrite)
+            {
+                WriteTimeStamp(1);
+                _engineWriter.Write(inputFrame);
+            }
         }
 
-        public void Write(GameFrame data)
+        public void Write(GameFrame inputFrame)
         {
-            WriteTimeStamp(2);
-            _gameWriter.Write(data);
+            if (_writer.BaseStream.CanWrite)
+            {
+                WriteTimeStamp(2);
+                _gameWriter.Write(inputFrame);
+            }
         }
 
         public void Close()

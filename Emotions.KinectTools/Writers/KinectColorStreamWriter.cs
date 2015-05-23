@@ -28,7 +28,7 @@ namespace Emotions.KinectTools.Writers
             Path = path;
         }
 
-        public void Write(ColorFrame colorFrame)
+        public void Write(ColorFrame inputFrame)
         {
             var image = new Bitmap(_info.ColorFrameWidth, _info.ColorFrameHeight, _pixelFormat);
             var rect = new Rectangle(0, 0, _info.ColorFrameWidth, _info.ColorFrameHeight);
@@ -36,7 +36,7 @@ namespace Emotions.KinectTools.Writers
 
             var ptr = bmpData.Scan0;
             var bytes = bmpData.Stride * image.Height;
-            Marshal.Copy(colorFrame.Data, 0, ptr, bytes);
+            Marshal.Copy(inputFrame.Data, 0, ptr, bytes);
             image.UnlockBits(bmpData);
 
             _writer.WriteVideoFrame(image);

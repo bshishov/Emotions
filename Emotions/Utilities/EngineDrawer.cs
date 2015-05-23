@@ -11,27 +11,27 @@ namespace Emotions.Utilities
 {
     class EngineDrawer : Canvas, IDisposable
     {
-        private EngineFrame _engineFrame;
+        private EngineInputFrame _engineInputFrame;
         private readonly Brush _brush = Brushes.Red;
         private readonly Pen _pen = new Pen(Brushes.Red, 1);
 
         public EngineDrawer()
         {
-            IoC.Get<IEngineService>().OnUpdate += EngineOnOnUpdate;
+            IoC.Get<IEngineService>().Updated += EngineOnUpdated;
         }
 
-        private void EngineOnOnUpdate(object sender, EngineUpdateEventArgs args)
+        private void EngineOnUpdated(IEngineService engineService, EngineInputFrame engineInputFrame)
         {
-            _engineFrame = args.EngineFrame;
+            _engineInputFrame = engineInputFrame;
             Dispatcher.Invoke(InvalidateVisual);
         }
 
         protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
         {
-            if (_engineFrame != null && _engineFrame.FeaturePoints != null)
+            if (_engineInputFrame != null && _engineInputFrame.FeaturePoints != null)
             {
                 var faceModelGroup = new GeometryGroup();
-                foreach (var point in _engineFrame.FeaturePoints)
+                foreach (var point in _engineInputFrame.FeaturePoints)
                 {
                     faceModelGroup.Children.Add(new EllipseGeometry(Project(point), 1, 1));
                 }
@@ -43,10 +43,10 @@ namespace Emotions.Utilities
 
         public void Dispose()
         {
-            IoC.Get<IEngineService>().OnUpdate -= EngineOnOnUpdate;
+            IoC.Get<IEngineService>().Updated -= EngineOnUpdated;
         }
 
-        private Point Project(EngineFrame.Point3 point)
+        private Point Project(EngineInputFrame.Point3 point)
         {
             const double xf = 0.75f;
             const double yf = 1.1f;

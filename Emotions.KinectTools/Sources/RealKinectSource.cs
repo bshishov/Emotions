@@ -20,7 +20,7 @@ namespace Emotions.KinectTools.Sources
         private SkeletonTracker _skeletonTracker;
 
         public event Action<IKinectSource, FramesContainer> FramesReady;
-        public event Action<IKinectSource, EngineFrame> EngineFrameReady;
+        public event Action<IKinectSource, EngineInputFrame> EngineFrameReady;
         public event Action<IKinectSource> Started;
         public event Action<IKinectSource> Stopped;
 
@@ -117,7 +117,7 @@ namespace Emotions.KinectTools.Sources
         private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame, Skeleton skeleton)
         {
             if(EngineFrameReady != null)   
-                EngineFrameReady.Invoke(this, EngineFrame.FromFaceTrackFrame(frame, skeleton));
+                EngineFrameReady.Invoke(this, EngineInputFrame.FromFaceTrackFrame(frame, skeleton));
         }
         
         private void InitSensor()

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.Composition;
-using Caliburn.Micro;
 using Emotions.KinectTools.Tracking;
 using Emotions.Services.Engine;
 using Emotions.Views;
@@ -13,7 +12,6 @@ namespace Emotions.ViewModels
     {
         [Import] private IEngineService _engine;
         private AUView _view;
-        private readonly ILog _log = LogManager.GetLog(typeof(AUViewModel));
 
         public override PaneLocation PreferredLocation
         {
@@ -28,20 +26,20 @@ namespace Emotions.ViewModels
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            _engine.OnUpdate += EngineOnOnUpdate;
+            _engine.Updated += EngineOnUpdated;
             _view = this.GetView() as AUView;
         }
 
-        public delegate void UpdateUICallback(EngineFrame buffer);
+        public delegate void UpdateUICallback(EngineInputFrame buffer);
 
-        private void EngineOnOnUpdate(object sender, EngineUpdateEventArgs args)
+        private void EngineOnUpdated(IEngineService engineService, EngineInputFrame engineInputFrame)
         {
-            _view.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), args.EngineFrame);
+            _view.Dispatcher.Invoke(new UpdateUICallback(UpdateUI), engineInputFrame);
         }
 
-        private void UpdateUI(EngineFrame engineFrame)
+        private void UpdateUI(EngineInputFrame engineInputFrame)
         {
-            _view.Update(engineFrame);
+            _view.Update(engineInputFrame);
         }
     }
 }

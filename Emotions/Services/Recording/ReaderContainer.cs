@@ -8,12 +8,12 @@ using Emotions.Modules.Game;
 
 namespace Emotions.Services.Recording
 {
-    public class ReaderContainer : IReader<FramesContainer>, IReader<EngineFrame>, IReader<GameFrame>
+    public class ReaderContainer : IReader<FramesContainer>, IReader<EngineInputFrame>, IReader<GameFrame>
     {
         private IReader<ColorFrame> _colorReader;
         private IReader<DepthFrame> _depthReader;
         private IReader<SkeletonFrame> _skeletonReader;
-        private IReader<EngineFrame> _engineReader;
+        private IReader<EngineInputFrame> _engineReader;
         private IReader<GameFrame> _gameReader;
         
         private FileStream _stream;
@@ -60,7 +60,7 @@ namespace Emotions.Services.Recording
             var engineReaderPath = _reader.ReadString();
             if (!String.IsNullOrEmpty(engineReaderPath))
             {
-                _engineReader = new StreamableReader<EngineFrame>();
+                _engineReader = new StreamableReader<EngineInputFrame>();
                 _engineReader.Open(System.IO.Path.Combine(directory, engineReaderPath));
             }
 
@@ -93,7 +93,7 @@ namespace Emotions.Services.Recording
                 case 0:
                     return ((IReader<FramesContainer>)this).Read();
                 case 1:
-                    return ((IReader<EngineFrame>)this).Read();
+                    return ((IReader<EngineInputFrame>)this).Read();
                 case 2:
                     return ((IReader<GameFrame>)this).Read();
                 default:
@@ -125,7 +125,7 @@ namespace Emotions.Services.Recording
             throw new Exception("Game reader is not ready");
         }
 
-        EngineFrame IReader<EngineFrame>.Read()
+        EngineInputFrame IReader<EngineInputFrame>.Read()
         {
             if (_engineReader != null)
             {

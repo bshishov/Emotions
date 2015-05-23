@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
 using Emotions.KinectTools.Tracking;
-using Emotions.Services.Engine;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
 namespace Emotions.Views
@@ -24,23 +23,14 @@ namespace Emotions.Views
         }
         
 
-        public void Update(EngineFrame engineFrame)
+        public void Update(EngineInputFrame engineInputFrame)
         {
-            AU1.Value = engineFrame.LipRaiser;
-            AU2.Value = engineFrame.JawLowerer;
-            AU3.Value = engineFrame.LipStretcher;
-            AU4.Value = engineFrame.BrowLowerer;
-            AU5.Value = engineFrame.LipCornerDepressor;
-            AU6.Value = engineFrame.BrowRaiser;
-
-            /*
-            PosXLabel.Content = buffer.FacePosition.X;
-            PosYLabel.Content = buffer.FacePosition.Y;
-            PosZLabel.Content = buffer.FacePosition.Z;
-
-            RotXLabel.Content = buffer.FaceRotation.X;
-            RotYLabel.Content = buffer.FaceRotation.Y;
-            RotZLabel.Content = buffer.FaceRotation.Z;*/
+            AU1.Value = engineInputFrame.LipRaiser;
+            AU2.Value = engineInputFrame.JawLowerer;
+            AU3.Value = engineInputFrame.LipStretcher;
+            AU4.Value = engineInputFrame.BrowLowerer;
+            AU5.Value = engineInputFrame.LipCornerDepressor;
+            AU6.Value = engineInputFrame.BrowRaiser;
         }
     }
 }

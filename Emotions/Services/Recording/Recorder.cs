@@ -6,7 +6,6 @@ using Emotions.KinectTools.Tracking;
 using Emotions.Modules.Game;
 using Emotions.Modules.Game.ViewModels;
 using Emotions.Services.Engine;
-using Emotions.ViewModels;
 
 namespace Emotions.Services.Recording
 {
@@ -41,7 +40,7 @@ namespace Emotions.Services.Recording
 
             _container = new WriterContainer(source.Info);
             _container.Open(path);
-            _container.Write(new EngineFrame()); // buffer
+            _container.Write(new EngineInputFrame()); // buffer
             _source = source;
         }
 
@@ -50,16 +49,16 @@ namespace Emotions.Services.Recording
             _container.Write(gameFrame);
         }
 
-        private void EngineOnOnUpdate(object sender, EngineUpdateEventArgs args)
+        private void EngineOnUpdated(IEngineService engineService, EngineInputFrame engineInputFrame)
         {
-            _container.Write(args.EngineFrame);
+            _container.Write(engineInputFrame);
         }
 
         public void Start()
         {
             _log.Info("Recorder started");
             _source.FramesReady += FramesReady;
-            _engine.OnUpdate += EngineOnOnUpdate;
+            _engine.Updated += EngineOnUpdated;
 
             if(_gameVm != null)
                 _gameVm.FrameReady += GameVmOnFrameReady;
@@ -77,7 +76,7 @@ namespace Emotions.Services.Recording
         {
             _log.Info("Recorder stopped");
             _source.FramesReady -= FramesReady;
-            _engine.OnUpdate -= EngineOnOnUpdate;
+            _engine.Updated -= EngineOnUpdated;
 
             if(_gameVm != null)
                 _gameVm.FrameReady -= GameVmOnFrameReady;

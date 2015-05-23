@@ -30,12 +30,12 @@ namespace Emotions.KinectTools.Writers
             Path = path;
         }
 
-        public void Write(DepthFrame depthFrame)
+        public void Write(DepthFrame inputFrame)
         {
             var image = new Bitmap(_info.DepthFrameWidth, _info.DepthFrameHeight, _pixelFormat);
             var rect = new Rectangle(0, 0, _info.DepthFrameWidth, _info.DepthFrameHeight);
             var bmpData = image.LockBits(rect, ImageLockMode.WriteOnly, image.PixelFormat);
-            var bytes = depthFrame.GetRgb24Bytes();
+            var bytes = inputFrame.GetRgb24Bytes();
             Marshal.Copy(bytes, 0, bmpData.Scan0, bytes.Length);
             image.UnlockBits(bmpData);
             _writer.WriteVideoFrame(image);
