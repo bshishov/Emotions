@@ -9,6 +9,9 @@
     <Grid VerticalAlignment="Stretch" Background="White">
         <StackPanel>
             <controls:RangedProperty x:Name="ReactionTime" Min="0" Max="1000" Caption="ReactionTime"/>
+            <controls:RangedProperty x:Name="Failed" Min="0" Max="20" Caption="Failed"/>
+            <controls:RangedProperty x:Name="Missclicks" Min="0" Max="20" Caption="Missclicks"/>
+            <controls:RangedProperty x:Name="Missed" Min="0" Max="20" Caption="Misses"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -6,9 +6,9 @@ using Caliburn.Micro;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 using Emotions.Modules.Game;
-using Emotions.Services.KinectInput;
+using Emotions.Modules.Kinect;
 
-namespace Emotions.Services.Engine
+namespace Emotions.Modules.Engine
 {
     [Export(typeof(IEngineService))]
     class Engine : IEngineService, IDisposable

@@ -16,6 +16,9 @@ namespace Emotions.Modules.Game.Views
         public void Update(GameFrame gameFrame)
         {
             this.ReactionTime.Value = gameFrame.ReactionTime;
+            this.Failed.Value = gameFrame.Failed;
+            this.Missclicks.Value = gameFrame.Missclicks;
+            this.Missed.Value = gameFrame.Missed;
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.Composition;
 using Emotions.KinectTools.Tracking;
-using Emotions.Services.Engine;
-using Emotions.Views;
+using Emotions.Modules.Engine.Views;
 using Gemini.Framework;
 using Gemini.Framework.Services;
 
-namespace Emotions.ViewModels
+namespace Emotions.Modules.Engine.ViewModels
 {
     [Export(typeof(AUViewModel))]
     class AUViewModel : Tool

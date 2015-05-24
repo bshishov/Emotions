@@ -37,7 +37,7 @@
                     [Event MouseLeftButtonUp] = [Action OnCanvasMouseLeftButtonUp($eventArgs)]" 
                 Width="800" Height="800">
                 <!-- BACKGROUND -->
-                <!-- <Rectangle Width="800" Height="800" Fill="White"/>-->
+                <Rectangle Width="800" Height="800" Fill="White"/>
             </Canvas>
         </Viewbox>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">

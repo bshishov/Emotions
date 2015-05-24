@@ -1,7 +1,7 @@
 using System;
 using Emotions.KinectTools.Tracking;
 
-namespace Emotions.Services.Engine
+namespace Emotions.Modules.Engine
 {
     class EngineUpdateEventArgs : EventArgs
     {

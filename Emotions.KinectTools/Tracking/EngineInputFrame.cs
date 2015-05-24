@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
 namespace Emotions.KinectTools.Tracking
 {
-    [Serializable]
     public class EngineInputFrame : IStreamable, ICloneable
     {
-        [Serializable]
         [DebuggerDisplay("({X},{Y},{Z})")]
-        [StructLayout(LayoutKind.Sequential)]
         public struct Point3 : IStreamable
         {
             public float X;
@@ -28,47 +24,52 @@ namespace Emotions.KinectTools.Tracking
 
             public void FromStream(BinaryReader reader)
             {
-                X = reader.ReadSingle();
-                Y = reader.ReadSingle();
-                Z = reader.ReadSingle();
+                this.X = reader.ReadSingle();
+                this.Y = reader.ReadSingle();
+                this.Z = reader.ReadSingle();
+            }
+
+            public override string ToString()
+            {
+                return string.Format("({0}, {1}, {2})", X, Y, Z);
             }
         }
 
-        public TimeSpan Time;
+        public TimeSpan Time { get; set; }
 
         /// <summary>
         /// FACS AU 10 
         /// </summary>
-        public double LipRaiser; 
+        public double LipRaiser { get; set; }
 
         /// <summary>
         /// FACS AU 26
         /// </summary>
-        public double JawLowerer;
+        public double JawLowerer { get; set; }
 
         /// <summary>
         /// FACS AU 20
         /// </summary>
-        public double LipStretcher;
+        public double LipStretcher { get; set; }
 
         /// <summary>
         /// FACS AU 4
         /// </summary>
-        public double BrowLowerer;
+        public double BrowLowerer { get; set; }
 
         /// <summary>
         /// FACS AU 15
         /// </summary>
-        public double LipCornerDepressor;
+        public double LipCornerDepressor { get; set; }
 
         /// <summary>
         /// FACS AU 2
         /// </summary>
-        public double BrowRaiser;
+        public double BrowRaiser { get; set; }
 
-        public Point3 FacePosition; 
-        public Point3 FaceRotation;
-        public Point3[] FeaturePoints;
+        public Point3 FacePosition { get; set; }
+        public Point3 FaceRotation { get; set; }
+        public Point3[] FeaturePoints { get; set; }
 
         public object Clone()
         {
@@ -109,15 +110,17 @@ namespace Emotions.KinectTools.Tracking
             BrowLowerer = reader.ReadDouble();
             LipCornerDepressor = reader.ReadDouble();
             BrowRaiser = reader.ReadDouble();
-
-            FacePosition = new Point3();
-            FacePosition.FromStream(reader);
             
-            FaceRotation = new Point3();
-            FaceRotation.FromStream(reader);
+            var pos = new Point3();
+            pos.FromStream(reader);
+            FacePosition = pos;
+
+            var rot = new Point3();
+            rot.FromStream(reader);
+            FaceRotation = rot;
             
             var len = reader.ReadInt32();
-            if (len > 0)
+            if (len > 0 && len < 200)
             {
                 FeaturePoints = new Point3[len];
                 for (var i = 0; i < len; i++)
@@ -149,13 +152,13 @@ namespace Emotions.KinectTools.Tracking
                 BrowLowerer = au[AnimationUnit.BrowLower],
                 LipCornerDepressor = au[AnimationUnit.LipCornerDepressor],
                 BrowRaiser = au[AnimationUnit.BrowRaiser],
-                FacePosition = new EngineInputFrame.Point3()
+                FacePosition = new Point3()
                 {
                     X = faceFrame.Translation.X,
                     Y = faceFrame.Translation.Y,
                     Z = faceFrame.Translation.Z,
                 },
-                FaceRotation = new EngineInputFrame.Point3()
+                FaceRotation = new Point3()
                 {
                     X = faceFrame.Rotation.X,
                     Y = faceFrame.Rotation.Y,

@@ -1,7 +1,6 @@
-﻿using Emotions.KinectTools;
-using Emotions.KinectTools.Sources;
+﻿using Emotions.KinectTools.Sources;
 
-namespace Emotions.Services.KinectInput
+namespace Emotions.Modules.Kinect
 {
     class SourceChangedArgs
     {

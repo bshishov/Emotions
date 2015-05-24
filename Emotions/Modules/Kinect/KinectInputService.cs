@@ -1,13 +1,14 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.IO;
 using Caliburn.Micro;
 using Emotions.KinectTools.Sources;
-using Emotions.ViewModels;
+using Emotions.Modules.Engine;
+using Emotions.Modules.Kinect.ViewModels;
 using Gemini.Framework;
 using Gemini.Framework.Services;
-using Emotions.Services.Engine;
 
-namespace Emotions.Services.KinectInput
+namespace Emotions.Modules.Kinect
 {
     [Export(typeof(IEditorProvider))]
     [Export(typeof(IKinectInputService))]
@@ -77,7 +78,7 @@ namespace Emotions.Services.KinectInput
 
         public bool Handles(string path)
         {
-            return true;
+            return Path.GetExtension(path) == ".rec";
         }
 
         public IDocument Create(string path)

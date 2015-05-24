@@ -6,7 +6,7 @@ using Emotions.KinectTools.Tracking;
 using Emotions.KinectTools.Writers;
 using Emotions.Modules.Game;
 
-namespace Emotions.Services.Recording
+namespace Emotions.Modules.Kinect.Recording
 {
     class WriterContainer : 
         IWriter<FramesContainer>,

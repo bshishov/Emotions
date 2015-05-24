@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Emotions.Views
+namespace Emotions.Modules.Kinect.Views
 {
     /// <summary>
     /// Interaction logic for KinectOutputView.xaml

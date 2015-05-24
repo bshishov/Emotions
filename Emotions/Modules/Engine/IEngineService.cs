@@ -2,7 +2,7 @@
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 
-namespace Emotions.Services.Engine
+namespace Emotions.Modules.Engine
 {
     interface IEngineService
     {

@@ -14,7 +14,7 @@ namespace Emotions.KinectTools.Readers
             get 
             { 
                 if(_reader != null)
-                    return !_reader.BaseStream.CanRead;
+                    return _reader.BaseStream.Position >= _reader.BaseStream.Length;
                 return false;
             }
         }

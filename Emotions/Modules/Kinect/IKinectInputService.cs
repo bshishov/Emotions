@@ -1,8 +1,6 @@
-﻿using Emotions.KinectTools;
-using Emotions.KinectTools.Sources;
-using Gemini.Framework;
+﻿using Emotions.KinectTools.Sources;
 
-namespace Emotions.Services.KinectInput
+namespace Emotions.Modules.Kinect
 {
     internal interface IKinectInputService
     {

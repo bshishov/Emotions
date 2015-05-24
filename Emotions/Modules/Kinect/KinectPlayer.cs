@@ -6,9 +6,9 @@ using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 using Emotions.Modules.Game;
-using Emotions.Services.Recording;
+using Emotions.Modules.Kinect.Recording;
 
-namespace Emotions.Services.KinectInput
+namespace Emotions.Modules.Kinect
 {
     public class KinectPlayer : IKinectSource
     {

@@ -6,7 +6,7 @@ using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 using Emotions.Modules.Game;
 
-namespace Emotions.Services.Recording
+namespace Emotions.Modules.Kinect.Recording
 {
     public class ReaderContainer : IReader<FramesContainer>, IReader<EngineInputFrame>, IReader<GameFrame>
     {

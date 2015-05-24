@@ -7,7 +7,7 @@
              xmlns:controls="clr-namespace:Emotions.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:utilities="clr-namespace:Emotions.Utilities"
-             x:Class="Emotions.Views.KinectOutputView" 
+             x:Class="Emotions.Modules.Kinect.Views.KinectOutputView" 
              mc:Ignorable="d" 
              Background="#222222"
              d:DesignHeight="300" d:DesignWidth="300">

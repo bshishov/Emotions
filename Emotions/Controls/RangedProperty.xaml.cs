@@ -118,10 +118,10 @@ namespace Emotions.Controls
             Graph.Points = new PointCollection();
 
             var xScale = GraphCanvas.Width / PointsCount;
-            var halfHeight = GraphCanvas.Height / 2;
+            var y = DoubleSisded ? GraphCanvas.Height / 2 : GraphCanvas.Height;
 
             for (var i = 0; i < PointsCount; i++)
-                Graph.Points.Add(new Point(i * xScale, halfHeight));
+                Graph.Points.Add(new Point(i * xScale, y));
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)

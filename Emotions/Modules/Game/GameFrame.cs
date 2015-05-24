@@ -5,34 +5,34 @@ namespace Emotions.Modules.Game
 {
     public class GameFrame : IStreamable
     {
-        public int FrameNumber;
+        public int FrameNumber { get; set; }
 
-        public long Time;
+        public long Time { get; set; }
 
         /// <summary>
         /// Non-clicked circles
         /// </summary>
-        public int Missed;
+        public int Missed { get; set; }
 
         /// <summary>
         /// Clicks on the canvas
         /// </summary>
-        public int Missclicks;
+        public int Missclicks { get; set; }
 
         /// <summary>
         /// Right clicks
         /// </summary>
-        public int Scored;
+        public int Scored { get; set; }
 
         /// <summary>
         /// Clicks on wrong target
         /// </summary>
-        public int Failed;
+        public int Failed { get; set; }
 
         /// <summary>
         /// Time from creating circle to clicking on it
         /// </summary>
-        public int ReactionTime;
+        public int ReactionTime { get; set; }
 
         public void ToStream(BinaryWriter writer)
         {

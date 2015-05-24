@@ -3,14 +3,12 @@ using System.ComponentModel.Composition;
 using Caliburn.Micro;
 using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
+using Emotions.Modules.Engine;
 using Emotions.Modules.Game.ViewModels;
-using Emotions.Services.Engine;
-using Emotions.Services.Recording;
+using Emotions.Modules.Kinect.Recording;
 using Gemini.Framework;
-using Gemini.Framework.Results;
-using Gemini.Modules.Shell.Views;
 
-namespace Emotions.ViewModels
+namespace Emotions.Modules.Kinect.ViewModels
 {
     [Export(typeof(KinectOutputViewModel))]
     class KinectOutputViewModel : Document, IDisposable

@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Caliburn.Micro;
-using Emotions.ViewModels;
+using Emotions.Modules.Kinect.ViewModels;
 using Gemini.Framework;
 using Gemini.Framework.Services;
 
@@ -56,6 +56,7 @@ namespace Emotions.Modules.Game.ViewModels
         private readonly ILog _log = LogManager.GetLog(typeof(GameViewModel));
         private int _frame;
         private KinectOutputViewModel _kinectVm;
+        private int _totalTime;
 
         // GAME PARAMS
         private const int FrameDelay = 1000 / 15;
@@ -206,32 +207,32 @@ namespace Emotions.Modules.Game.ViewModels
 
         private void UpdateCycle()
         {
-            long totalTime = 0;
+            _totalTime = 0;
             var startFrameTime = DateTime.Now;
             var lastCircleSpawnTime = DateTime.Now;
             var spawnCicrleDelegate = new Action<long>(SpawnCircle);
             var updateCirclesDelegate = new Action<double, int>(UpdateCircles);
 
-            while (totalTime < TargetTime)
+            while (_totalTime < TargetTime)
             {
-                var progress = (double)totalTime / TargetTime;
+                var progress = (double)_totalTime / TargetTime;
                 var spawnDelay = StartDelay - (int)(progress * (StartDelay - TargetDelay));
                 
                 if (DateTime.Now.Subtract(lastCircleSpawnTime).Milliseconds > spawnDelay)
                 {
-                    _canvas.Dispatcher.Invoke(spawnCicrleDelegate, new object[] { totalTime });
+                    _canvas.Dispatcher.Invoke(spawnCicrleDelegate, new object[] { _totalTime });
                     lastCircleSpawnTime = DateTime.Now;
                 }
 
                 _canvas.Dispatcher.Invoke(updateCirclesDelegate, new object[]{ progress, FrameDelay });
                 startFrameTime = startFrameTime.Add(TimeSpan.FromMilliseconds(FrameDelay));
                 Thread.Sleep(FrameDelay);
-                totalTime += FrameDelay;
+                _totalTime += FrameDelay;
             }
 
             if (_kinectVm != null && _kinectVm.IsRecording)
                 _kinectVm.StopRecording();
-
+            _canvas.Dispatcher.Invoke(RemoveCircles);
             TotalScore = Scored;
             ShowScoreboard = true;
         }
@@ -255,6 +256,15 @@ namespace Emotions.Modules.Game.ViewModels
             }
         }
 
+        private void RemoveCircles()
+        {
+            foreach (var circle in _circles.ToList())
+            {
+                _canvas.Children.Remove(circle.Ellipse);
+                _circles.Remove(circle);
+            }
+        }
+
         public void OnCanvasMouseLeftButtonUp(object argsRaw)
         {
             var args = argsRaw as MouseButtonEventArgs;
@@ -264,7 +274,7 @@ namespace Emotions.Modules.Game.ViewModels
                 if (circle.IsGood)
                 {
                     Scored += 1;
-                    ReactionTime = DateTime.Now.Subtract(circle.CreationTime).Milliseconds;
+                    ReactionTime =(int)(_totalTime - circle.CreationTime);
                 }
                 else
                     Failed += 1;

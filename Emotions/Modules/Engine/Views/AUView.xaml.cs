@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using Emotions.KinectTools.Tracking;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 
-namespace Emotions.Views
+namespace Emotions.Modules.Engine.Views
 {
     /// <summary>
     /// Interaction logic for AUView.xaml

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Emotions.Views
+namespace Emotions.Modules.Spreadsheet.Views
 {
     /// <summary>
-    /// Interaction logic for EngineControlView.xaml
+    /// Interaction logic for SpreadsheetView.xaml
     /// </summary>
-    public partial class EngineControlView : UserControl
+    public partial class SpreadsheetView : UserControl
     {
-        public EngineControlView()
+        public SpreadsheetView()
         {
             InitializeComponent();
         }
