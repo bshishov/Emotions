@@ -70,6 +70,10 @@ namespace Emotions.KinectTools.Tracking
         public Point3 FacePosition { get; set; }
         public Point3 FaceRotation { get; set; }
         public Point3[] FeaturePoints { get; set; }
+        public Point3 HeadPosition { get; set; }
+        public Point3 ShoulderCenter { get; set; }
+        public Point3 ShoulderLeft { get; set; }
+        public Point3 ShoulderRight { get; set; }
 
         public object Clone()
         {
@@ -89,7 +93,12 @@ namespace Emotions.KinectTools.Tracking
 
             FacePosition.ToStream(writer);
             FaceRotation.ToStream(writer);
-            
+
+            HeadPosition.ToStream(writer);
+            ShoulderCenter.ToStream(writer);
+            ShoulderLeft.ToStream(writer);
+            ShoulderRight.ToStream(writer);
+
             if(FeaturePoints == null)
                 writer.Write(0);
             else
@@ -110,14 +119,30 @@ namespace Emotions.KinectTools.Tracking
             BrowLowerer = reader.ReadDouble();
             LipCornerDepressor = reader.ReadDouble();
             BrowRaiser = reader.ReadDouble();
-            
-            var pos = new Point3();
-            pos.FromStream(reader);
-            FacePosition = pos;
 
-            var rot = new Point3();
-            rot.FromStream(reader);
-            FaceRotation = rot;
+            var p = new Point3();
+            p.FromStream(reader);
+            FacePosition = p;
+
+            p = new Point3();
+            p.FromStream(reader);
+            FaceRotation = p;
+
+            p = new Point3();
+            p.FromStream(reader);
+            HeadPosition = p;
+
+            p = new Point3();
+            p.FromStream(reader);
+            ShoulderCenter = p;
+
+            p = new Point3();
+            p.FromStream(reader);
+            ShoulderLeft = p;
+
+            p = new Point3();
+            p.FromStream(reader);
+            ShoulderRight = p;
             
             var len = reader.ReadInt32();
             if (len > 0 && len < 200)
@@ -165,7 +190,22 @@ namespace Emotions.KinectTools.Tracking
                     Z = faceFrame.Rotation.Z,
                 },
             };
+
+            var hpos = skeleton.Joints[JointType.Head].Position;
+            frame.HeadPosition = new Point3() { X = hpos.X, Y = hpos.Y, Z = hpos.Z };
+
+            hpos = skeleton.Joints[JointType.ShoulderCenter].Position;
+            frame.ShoulderCenter = new Point3() { X = hpos.X, Y = hpos.Y, Z = hpos.Z };
+
+            hpos = skeleton.Joints[JointType.ShoulderLeft].Position;
+            frame.ShoulderLeft = new Point3() { X = hpos.X, Y = hpos.Y, Z = hpos.Z };
+
+            hpos = skeleton.Joints[JointType.ShoulderRight].Position;
+            frame.ShoulderRight = new Point3() { X = hpos.X, Y = hpos.Y, Z = hpos.Z };
+
             return frame;
         }
+
+       
     }
 }
