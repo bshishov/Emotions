@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 using Caliburn.Micro;
 using Emotions.Modules.Kinect.ViewModels;
 using Gemini.Framework;
@@ -25,11 +24,15 @@ namespace Emotions.Modules.Game.ViewModels
             public int TTL;
             public readonly bool IsGood;
             public readonly Ellipse Ellipse;
+            private double _x;
+            private double _y;
 
             public Circle(long time, Ellipse ellipse, int ttl, bool isgood)
             {
                 CreationTime = time;
                 Ellipse = ellipse;
+                _x = Canvas.GetLeft(Ellipse);
+                _y = Canvas.GetTop(Ellipse);
                 TTL = ttl;
                 IsGood = isgood;
             }
@@ -37,6 +40,10 @@ namespace Emotions.Modules.Game.ViewModels
             public void Update(int delay)
             {
                 TTL -= delay;
+                Ellipse.Width += 2;
+                Ellipse.Height += 2;
+                Canvas.SetLeft(Ellipse, _x -= 1);
+                Canvas.SetTop(Ellipse, _y -= 1);
             }
         }
 
@@ -60,13 +67,13 @@ namespace Emotions.Modules.Game.ViewModels
 
         // GAME PARAMS
         private const int FrameDelay = 1000 / 15;
-        private const int MinSize = 50;
-        private const int MaxSize = 200;
+        private const int MinSize = 20;
+        private const int MaxSize = 50;
         private const int StartDelay= 700;
         private const int TargetDelay = 120;
         private const int TTL = 1300; // Time to live in ms
         private const double GoodCirclePropability = 0.5;
-        private const long TargetTime = 1 * 60 * 1000; // minutes * (sec/min) * (ms / min)
+        private const long TargetTime = 2 * 60 * 1000; // minutes * (sec/min) * (ms / min)
 
         
         public bool ShowScoreboard
@@ -233,7 +240,7 @@ namespace Emotions.Modules.Game.ViewModels
             if (_kinectVm != null && _kinectVm.IsRecording)
                 _kinectVm.StopRecording();
             _canvas.Dispatcher.Invoke(RemoveCircles);
-            TotalScore = Scored;
+            TotalScore = Scored * 3 - Failed * 2 - Missed * 2 - Missclicks;
             ShowScoreboard = true;
         }
 

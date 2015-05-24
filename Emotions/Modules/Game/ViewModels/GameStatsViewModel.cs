@@ -18,7 +18,7 @@ namespace Emotions.Modules.Game.ViewModels
         public GameStatsViewModel()
         {
             DisplayName = "Game stats";
-        }
+        } 
 
         protected override void OnViewLoaded(object view)
         {
@@ -27,7 +27,8 @@ namespace Emotions.Modules.Game.ViewModels
 
         private void OnGameFrameReady(GameViewModel gameViewModel, GameFrame gameFrame)
         {
-            _view.Update(gameFrame);
+            if(_view != null)
+                _view.Update(gameFrame);
         }
 
         public void Bind(GameViewModel vm)
