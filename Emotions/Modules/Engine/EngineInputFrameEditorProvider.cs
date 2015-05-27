@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Caliburn.Micro;
 using Emotions.KinectTools.Readers;
 using Emotions.KinectTools.Tracking;
 using Emotions.Modules.Spreadsheet.ViewModels;
@@ -12,6 +12,8 @@ namespace Emotions.Modules.Engine
     [Export(typeof(IEditorProvider))]
     class EngineInputFrameEditorProvider : IEditorProvider
     {
+        private readonly ILog _log = LogManager.GetLog(typeof(EngineInputFrameEditorProvider));
+
         public bool Handles(string path)
         {
             return path.Contains("engine.bin");
@@ -19,7 +21,8 @@ namespace Emotions.Modules.Engine
 
         public IDocument Create(string path)
         {
-            const int limit = 500;
+            const int limit = 1500;
+            _log.Warn("Displaying only {0} rows", limit);
             var frames = new List<EngineInputFrame>();
             using (var reader = new StreamableReader<EngineInputFrame>())
             {

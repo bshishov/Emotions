@@ -35,6 +35,8 @@ namespace Emotions.Modules.Kinect.Recording
             _gameWriter = new StreamableWriter<GameFrame>();
         }
 
+        public bool IsActive { get; private set; }
+
         public string Path { get; private set; }
 
         public void Open(string path)
@@ -65,6 +67,8 @@ namespace Emotions.Modules.Kinect.Recording
             _writer.Write(System.IO.Path.GetFileName(_engineWriter.Path));
             _writer.Write(System.IO.Path.GetFileName(_gameWriter.Path));
             _writer.Flush();
+
+            IsActive = true;
         }
         
         private void WriteTimeStamp(byte streamId)
@@ -118,6 +122,8 @@ namespace Emotions.Modules.Kinect.Recording
             _skeletonWriter.Close();
             _engineWriter.Close();
             _gameWriter.Close();
+
+            IsActive = false;
         }
 
         public void Dispose()

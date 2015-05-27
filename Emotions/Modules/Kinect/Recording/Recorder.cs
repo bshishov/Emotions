@@ -5,7 +5,6 @@ using Emotions.KinectTools.Sources;
 using Emotions.KinectTools.Tracking;
 using Emotions.Modules.Engine;
 using Emotions.Modules.Game;
-using Emotions.Modules.Game.ViewModels;
 
 namespace Emotions.Modules.Kinect.Recording
 {
@@ -16,7 +15,7 @@ namespace Emotions.Modules.Kinect.Recording
         private readonly IKinectSource _source;
         private readonly IEngineService _engine;
         private readonly IGameFrameProvider _gameVm;
-
+        
         public Recorder(IKinectSource source, IGameFrameProvider gameVm, string path)
         {
             _source = source;
@@ -46,14 +45,25 @@ namespace Emotions.Modules.Kinect.Recording
 
         private void GameVmOnFrameReady(object o, GameFrame gameFrame)
         {
+            if (_container == null)
+                throw new Exception("This recorder is stopped");
             _container.Write(gameFrame);
         }
 
         private void EngineOnUpdated(IEngineService engineService, EngineInputFrame engineInputFrame)
         {
+            if (_container == null)
+                throw new Exception("This recorder is stopped");
             _container.Write(engineInputFrame);
         }
-
+        
+        private void FramesReady(object sender, FramesContainer e)
+        {
+            if (_container == null)
+                throw new Exception("This recorder is stopped");
+            _container.Write(e);
+        }
+        
         public void Start()
         {
             _log.Info("Recorder started");
@@ -64,14 +74,7 @@ namespace Emotions.Modules.Kinect.Recording
                 _gameVm.GameFrameReady += GameVmOnFrameReady;
         }
 
-        private void FramesReady(object sender, FramesContainer e)
-        {
-            if (_container == null)
-                throw new Exception("This recorder is stopped");
-
-            _container.Write(e);
-        }
-        
+       
         public void Stop()
         {
             _log.Info("Recorder stopped");
