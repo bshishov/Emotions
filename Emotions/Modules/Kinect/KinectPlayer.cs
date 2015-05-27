@@ -10,7 +10,7 @@ using Emotions.Modules.Kinect.Recording;
 
 namespace Emotions.Modules.Kinect
 {
-    public class KinectPlayer : IKinectSource
+    public class KinectPlayer : IKinectSource, IGameFrameProvider
     {
         private CancellationTokenSource _cancellationTokenSource;
         private ReaderContainer _reader;
@@ -20,7 +20,7 @@ namespace Emotions.Modules.Kinect
         public string Name { get; private set; }
         public event Action<IKinectSource, FramesContainer> FramesReady;
         public event Action<IKinectSource, EngineInputFrame> EngineFrameReady;
-        public event Action<IKinectSource, GameFrame> GameFrameReady;
+        public event Action<object, GameFrame> GameFrameReady;
         public event Action<IKinectSource> Started;
         public event Action<IKinectSource> Stopped;
         public KinectSourceInfo Info { get; private set; }

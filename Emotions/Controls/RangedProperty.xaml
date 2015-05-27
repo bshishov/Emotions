@@ -24,7 +24,7 @@
             </Grid.RowDefinitions>
             <!--<Image x:Name="TimeLineImage" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="Fill"/>-->
             <Viewbox Grid.Row="1" Grid.ColumnSpan="2" Stretch="Fill">
-                <Canvas x:Name="GraphCanvas" Width="300" Height="50">
+                <Canvas x:Name="GraphCanvas" Width="300" Height="50" ClipToBounds="True">
                     <Polyline x:Name="Graph" 
                               Stroke="Black" 
                               StrokeThickness="2"

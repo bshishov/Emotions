@@ -167,7 +167,7 @@ namespace Emotions.Modules.Kinect.ViewModels
         {
             if(IsRecording)
                 StopRecording();
-
+            UnbindEngine();
             if (_currentSource != null)
             {
                 _currentSource.Stop();

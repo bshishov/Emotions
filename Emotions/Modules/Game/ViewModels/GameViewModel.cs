@@ -16,7 +16,7 @@ using Gemini.Framework.Services;
 namespace Emotions.Modules.Game.ViewModels
 {
     [Export(typeof(GameViewModel))]
-    public class GameViewModel : Document
+    public class GameViewModel : Document, IGameFrameProvider
     {
         class Circle
         {
@@ -47,7 +47,7 @@ namespace Emotions.Modules.Game.ViewModels
             }
         }
 
-        public event Action<GameViewModel, GameFrame> FrameReady;
+        public event Action<object, GameFrame> GameFrameReady;
 
         private Canvas _canvas;
         private bool _autoRec;
@@ -190,7 +190,6 @@ namespace Emotions.Modules.Game.ViewModels
                 _kinectVm.StartRecording(this);
             }
             ShowScoreboard = false;
-            IoC.Get<GameStatsViewModel>().Bind(this);
             Task.Factory.StartNew(UpdateCycle);
         }
         
@@ -254,8 +253,8 @@ namespace Emotions.Modules.Game.ViewModels
                     if (circle.IsGood)
                     {
                         Missed++;
-                        if (FrameReady != null)
-                            FrameReady(this, GetFrame());
+                        if (GameFrameReady != null)
+                            GameFrameReady(this, GetFrame());
                     }
                     _canvas.Children.Remove(circle.Ellipse);
                     _circles.Remove(circle);
@@ -294,8 +293,8 @@ namespace Emotions.Modules.Game.ViewModels
                 Missclicks += 1;
             }
 
-            if (FrameReady != null)
-                FrameReady(this, GetFrame());
+            if (GameFrameReady != null)
+                GameFrameReady(this, GetFrame());
         }
 
         private GameFrame GetFrame()

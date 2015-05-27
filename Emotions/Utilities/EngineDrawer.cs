@@ -12,8 +12,8 @@ namespace Emotions.Utilities
     class EngineDrawer : Canvas, IDisposable
     {
         private EngineInputFrame _engineInputFrame;
-        private readonly Brush _brush = Brushes.Red;
-        private readonly Pen _pen = new Pen(Brushes.Red, 1);
+        private readonly Brush _brush = Brushes.Cyan;
+        private readonly Pen _pen = new Pen(Brushes.Cyan, 1);
 
         public EngineDrawer()
         {
@@ -35,6 +35,11 @@ namespace Emotions.Utilities
                 {
                     faceModelGroup.Children.Add(new EllipseGeometry(Project(point), 1, 1));
                 }
+
+                faceModelGroup.Children.Add(new EllipseGeometry(Project(_engineInputFrame.HeadPosition), 2, 2));
+                faceModelGroup.Children.Add(new EllipseGeometry(Project(_engineInputFrame.ShoulderCenter), 2, 2));
+                faceModelGroup.Children.Add(new EllipseGeometry(Project(_engineInputFrame.ShoulderLeft), 2, 2));
+                faceModelGroup.Children.Add(new EllipseGeometry(Project(_engineInputFrame.ShoulderRight), 2, 2));
                 drawingContext.DrawGeometry(_brush, _pen, faceModelGroup);
             }
 

@@ -15,9 +15,9 @@ namespace Emotions.Modules.Kinect.Recording
         private readonly WriterContainer _container;
         private readonly IKinectSource _source;
         private readonly IEngineService _engine;
-        private readonly GameViewModel _gameVm;
+        private readonly IGameFrameProvider _gameVm;
 
-        public Recorder(IKinectSource source, GameViewModel gameVm, string path)
+        public Recorder(IKinectSource source, IGameFrameProvider gameVm, string path)
         {
             _source = source;
             _engine = IoC.Get<IEngineService>();
@@ -44,7 +44,7 @@ namespace Emotions.Modules.Kinect.Recording
             _source = source;
         }
 
-        private void GameVmOnFrameReady(GameViewModel gameViewModel, GameFrame gameFrame)
+        private void GameVmOnFrameReady(object o, GameFrame gameFrame)
         {
             _container.Write(gameFrame);
         }
@@ -61,7 +61,7 @@ namespace Emotions.Modules.Kinect.Recording
             _engine.Updated += EngineOnUpdated;
 
             if(_gameVm != null)
-                _gameVm.FrameReady += GameVmOnFrameReady;
+                _gameVm.GameFrameReady += GameVmOnFrameReady;
         }
 
         private void FramesReady(object sender, FramesContainer e)
@@ -79,7 +79,7 @@ namespace Emotions.Modules.Kinect.Recording
             _engine.Updated -= EngineOnUpdated;
 
             if(_gameVm != null)
-                _gameVm.FrameReady -= GameVmOnFrameReady;
+                _gameVm.GameFrameReady -= GameVmOnFrameReady;
 
             if (_container == null)
                 throw new Exception("This recorder is already stopped");

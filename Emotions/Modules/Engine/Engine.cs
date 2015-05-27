@@ -101,7 +101,7 @@ namespace Emotions.Modules.Engine
                 Updated(this, (EngineInputFrame)engineInputFrame.Clone());
         }
         
-        private void OnGameFrameReady(IKinectSource kinectSource, GameFrame gameFrame)
+        private void OnGameFrameReady(object o, GameFrame gameFrame)
         {
             _log.Info("Gameframe received");
         }

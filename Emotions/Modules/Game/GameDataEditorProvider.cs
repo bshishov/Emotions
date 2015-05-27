@@ -16,7 +16,7 @@ namespace Emotions.Modules.Game
             return path.Contains("game.bin");
         }
 
-        public IDocument Create(string path)
+        public List<GameFrame> GetFrames(string path)
         {
             var frames = new List<GameFrame>();
             using (var reader = new StreamableReader<GameFrame>())
@@ -26,8 +26,12 @@ namespace Emotions.Modules.Game
                     frames.Add(reader.Read());
                 reader.Close();
             }
+            return frames;
+        }
 
-            return new SpreadsheetViewModel<GameFrame>(frames);
+        public IDocument Create(string path)
+        {
+            return new SpreadsheetViewModel<GameFrame>(GetFrames(path));
         }
     }
 }
