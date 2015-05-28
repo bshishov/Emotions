@@ -41,7 +41,9 @@
             </Canvas>
         </Viewbox>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button VerticalAlignment="Center" cal:Message.Attach="[Event Click] = [Action OnStartClicked()]" Margin="5" Padding="2">Start</Button>
+            <Button VerticalAlignment="Center" cal:Message.Attach="[Event Click] = [Action OnStartClicked(1)]" Margin="5" Padding="2">Start 1</Button>
+            <Button VerticalAlignment="Center" cal:Message.Attach="[Event Click] = [Action OnStartClicked(2)]" Margin="5" Padding="2">Start 2</Button>
+            <Button VerticalAlignment="Center" cal:Message.Attach="[Event Click] = [Action OnStartClicked(3)]" Margin="5" Padding="2">Start 3</Button>
             <CheckBox VerticalAlignment="Center" IsChecked="{Binding AutoRec}">Start recording automatically</CheckBox>
             <Rectangle Fill="Black" Width="1" Height="20" Margin="5"/>
             <Label VerticalAlignment="Center" Content="Scored:"/>

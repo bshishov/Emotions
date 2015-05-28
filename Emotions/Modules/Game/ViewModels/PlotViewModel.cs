@@ -53,7 +53,7 @@ namespace Emotions.Modules.Game.ViewModels
                 Title = "Time, ms"
             });
             model.Axes.Add(new LinearAxis { Position = AxisPosition.Right, Key = "Right", Title = "Count" });
-            model.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Key = "Left", Minimum = -1000, Maximum = 1500, Title = "Reaction Time, ms" });
+            model.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Key = "Left", Minimum = 0, Maximum = 1500, Title = "Reaction Time, ms" });
 
             var reactiontimeSeries = new LineSeries
             {

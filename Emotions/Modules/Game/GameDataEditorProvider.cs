@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Emotions.KinectTools.Readers;
 using Emotions.Modules.Spreadsheet.ViewModels;

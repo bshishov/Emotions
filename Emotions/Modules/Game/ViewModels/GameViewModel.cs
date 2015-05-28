@@ -51,7 +51,7 @@ namespace Emotions.Modules.Game.ViewModels
 
         private Canvas _canvas;
         private bool _autoRec;
-        private readonly Random _random;
+        private Random _random;
         private int _scored;
         private int _failed;
         private int _missed;
@@ -159,7 +159,7 @@ namespace Emotions.Modules.Game.ViewModels
         public GameViewModel()
         {
             DisplayName = "Game";
-            _random = new Random();
+            
         }
 
         public void OnCanvasLoaded(object sender, object context)
@@ -167,7 +167,7 @@ namespace Emotions.Modules.Game.ViewModels
             _canvas = sender as Canvas;
         }
 
-        public void OnStartClicked()
+        public void OnStartClicked(int n)
         {
             Scored = 0;
             Failed = 0;
@@ -175,6 +175,7 @@ namespace Emotions.Modules.Game.ViewModels
             Missclicks = 0;
             ReactionTime = 0;
             _frame = 0;
+            _random = new Random(n * 1234576);
 
             if (AutoRec)
             {
