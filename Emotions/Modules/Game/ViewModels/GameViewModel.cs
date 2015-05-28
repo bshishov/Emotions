@@ -69,11 +69,11 @@ namespace Emotions.Modules.Game.ViewModels
         private const int FrameDelay = 1000 / 15;
         private const int MinSize = 20;
         private const int MaxSize = 50;
-        private const int StartDelay= 700;
-        private const int TargetDelay = 120;
+        private const int StartDelay= 1000;
+        private const int TargetDelay = 100;
         private const int TTL = 1300; // Time to live in ms
         private const double GoodCirclePropability = 0.5;
-        private const long TargetTime = 2 * 60 * 1000; // minutes * (sec/min) * (ms / min)
+        private const long TargetTime = 3 * 60 * 1000; // minutes * (sec/min) * (ms / min)
 
         
         public bool ShowScoreboard
