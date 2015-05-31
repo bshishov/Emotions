@@ -21,7 +21,7 @@ namespace Emotions.Modules.Engine
 
         public IDocument Create(string path)
         {
-            const int limit = 1500;
+            const int limit = 2000;
             _log.Warn("Displaying only {0} rows", limit);
             var frames = new List<EngineInputFrame>();
             using (var reader = new StreamableReader<EngineInputFrame>())

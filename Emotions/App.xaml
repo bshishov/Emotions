@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
              xmlns:gemini="http://schemas.timjones.tw/gemini"
-             xmlns:utilities="clr-namespace:Emotions.Utilities">
+             xmlns:utilities="clr-namespace:Emotions.Utilities"
+             xmlns:emotions="clr-namespace:Emotions">
     <Application.Resources>
         <ResourceDictionary>
             <utilities:BoolToVisibilityConverter x:Key="BoolToVisibility" />
@@ -11,7 +12,7 @@
                 <ResourceDictionary>
                     <!--<gemini:AppBootstrapper x:Key="bootstrapper" /> -->
                     <!--<neuralNetworkTestUi:MyAppBootstrapper x:Key="bootstrapper" /> -->
-                    <gemini:AppBootstrapper x:Key="bootstrapper" />
+                    <emotions:MainBootstrapper x:Key="bootstrapper" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

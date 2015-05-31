@@ -127,6 +127,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FACS\ActionUnits.cs" />
+    <Compile Include="MainBootstrapper.cs" />
     <Compile Include="Modules\Engine\EngineInputFrameEditorProvider.cs" />
     <Compile Include="Modules\Engine\Module.cs" />
     <Compile Include="Modules\Game\GameDataEditorProvider.cs" />
