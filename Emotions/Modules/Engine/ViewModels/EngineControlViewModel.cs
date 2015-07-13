@@ -8,8 +8,13 @@ namespace Emotions.Modules.Engine.ViewModels
     [Export(typeof(EngineControlViewModel))]
     class EngineControlViewModel : Tool
     {
-        [Import]
-        private IEngineService _engine;
+        private readonly IEngineService _engine;
+
+        [ImportingConstructor]
+        public EngineControlViewModel(IEngineService engineService)
+        {
+            _engine = engineService;
+        }
 
         public override PaneLocation PreferredLocation
         {

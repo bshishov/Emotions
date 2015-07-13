@@ -9,7 +9,7 @@ namespace Emotions.Modules.Engine.ViewModels
     [Export(typeof(AUViewModel))]
     class AUViewModel : Tool
     {
-        [Import] private IEngineService _engine;
+        private readonly IEngineService _engine;
         private AUView _view;
 
         public override PaneLocation PreferredLocation
@@ -17,8 +17,10 @@ namespace Emotions.Modules.Engine.ViewModels
             get { return PaneLocation.Right; }
         }
 
-        public AUViewModel()
+        [ImportingConstructor]
+        public AUViewModel(IEngineService engine)
         {
+            _engine = engine;
             DisplayName = "Action Units";
         }
 

@@ -10,7 +10,6 @@ namespace Emotions.Utilities
 {
     public class SkeletonDrawer : Canvas
     {
-        private SkeletonFaceTracker _tracker;
         private EnumIndexableCollection<FeaturePoint, PointF> _facePoints;
         private FaceTriangle[] _triangles;
         private readonly Brush _brush = Brushes.Cyan;
@@ -130,7 +129,7 @@ namespace Emotions.Utilities
         
         public void Dispose()
         {
-            _tracker.TrackSucceed -= TrackerOnTrackSucceed;
+            SkeletonFaceTracker.TrackSucceed -= TrackerOnTrackSucceed;
         }
 
         private Point Project(SkeletonPoint point)

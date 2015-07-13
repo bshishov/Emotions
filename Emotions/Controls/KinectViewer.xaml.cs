@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
+using Emotions.Utilities;
 
 namespace Emotions.Controls
 {
@@ -103,7 +104,6 @@ namespace Emotions.Controls
                     96, 96, PixelFormats.Bgr32, null);
                 ColorImage.Source = _writableBitmap;
             }
-
             _writableBitmap.WritePixels(
                 new Int32Rect(0, 0, source.Info.ColorFrameWidth, source.Info.ColorFrameHeight),
                 e.ColorFrame.Data,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows;
 using Microsoft.Kinect;
 
 namespace Emotions.KinectTools.Frames
@@ -12,7 +13,7 @@ namespace Emotions.KinectTools.Frames
         public int Height { get; private set; }
         public int BytesPerPixel { get; private set; }
         public ColorImageFormat Format { get; private set; }
-        public int PixelDataLength { get; set; }
+        public int PixelDataLength { get; private set; }
         public byte[] Data { get; private set; }
 
         public ColorFrame(ColorImageFrame frame)
@@ -100,6 +101,41 @@ namespace Emotions.KinectTools.Frames
                 bytes[4 * pixelIndex + 3] = 0;
             }
             return bytes;
+        }
+
+        public int GetOffset(int x, int y)
+        {
+            return (y*Width + x) * BytesPerPixel;
+        }
+
+        public byte[] GetImageData(int x, int y, int width, int height)
+        {
+            var data = new byte[width*height*BytesPerPixel];
+            var idx = 0;
+            for (var j = y; j < y + height; j++)
+            for (var i = x; i < x + width; i++)
+            {
+                var offset = GetOffset(i, j);
+                data[idx++] = Data[offset + 0]; // R
+                data[idx++] = Data[offset + 1]; // G
+                data[idx++] = Data[offset + 2]; // B
+                data[idx++] = Data[offset + 3]; // A
+            }
+            return data;
+        }
+
+        public void SetImageData(byte[] data, int x, int y, int width, int height)
+        {
+            var idx = 0;
+            for (var j = y; j < y + height; j++)
+            for (var i = x; i < x + width; i++)
+            {
+                var offset = GetOffset(i, j);
+                Data[offset + 0] = data[idx++]; // R
+                Data[offset + 1] = data[idx++]; // G
+                Data[offset + 2] = data[idx++]; // B
+                Data[offset + 3] = data[idx++]; // A
+            }
         }
     }
 }

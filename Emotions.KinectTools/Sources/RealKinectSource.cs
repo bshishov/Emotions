@@ -116,7 +116,7 @@ namespace Emotions.KinectTools.Sources
 
         private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame, Skeleton skeleton)
         {
-            if(EngineFrameReady != null)   
+            if(EngineFrameReady != null)
                 EngineFrameReady.Invoke(this, EngineInputFrame.FromFaceTrackFrame(frame, skeleton));
         }
         
@@ -171,34 +171,7 @@ namespace Emotions.KinectTools.Sources
                 skeletonFrame = e.OpenSkeletonFrame();
 
                 if (colorImageFrame == null || depthImageFrame == null || skeletonFrame == null)
-                {
                     return;
-                }
-
-                // Check for image format changes.  The FaceTracker doesn't
-                // deal with that so we need to reset.
-                if (_depthImageFormat != depthImageFrame.Format)
-                {
-                    _depthImage = null;
-                    _depthImageFormat = depthImageFrame.Format;
-                }
-
-                if (_colorImageFormat != colorImageFrame.Format)
-                {
-                    _colorImage = null;
-                    _colorImageFormat = colorImageFrame.Format;
-                }
-
-                // Create any buffers to store copies of the data we work with
-                if (_depthImage == null)
-                    _depthImage = new short[depthImageFrame.PixelDataLength];
-
-                if (_colorImage == null)
-                    _colorImage = new byte[colorImageFrame.PixelDataLength];
-
-                // Get the skeleton information
-                if (_skeletonData == null || _skeletonData.Length != skeletonFrame.SkeletonArrayLength)
-                    _skeletonData = new Skeleton[skeletonFrame.SkeletonArrayLength];
 
                 FramesReady.Invoke(this, new FramesContainer(
                     new ColorFrame(colorImageFrame), 

@@ -14,7 +14,13 @@ namespace Emotions.Modules.Output
     [Export(typeof(IModule))]
     class Module : ModuleBase
     {
-        [Import] private OutputViewModel _outputViewModel;
+        private OutputViewModel _outputViewModel;
+
+        [ImportingConstructor]
+        public Module(OutputViewModel outputViewModel)
+        {
+            _outputViewModel = outputViewModel;
+        }
 
         public override IEnumerable<Type> DefaultTools
         {

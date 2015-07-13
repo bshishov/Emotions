@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Emotions.Modules.Pulse.Views.PulseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:Emotions.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Background="Black">
+            <Image  Source="{Binding AmplifiedImage}" />
+        </Grid>
+        <Grid Grid.Column="1" VerticalAlignment="Top" MinWidth="200" Margin="5">
+            <StackPanel>
+                <TextBlock>Amplification</TextBlock>
+                <Slider Value="{Binding Amplification}" Minimum="0" Maximum="100" />
+                <TextBlock>Blur radius</TextBlock>
+                <Slider Value="{Binding BlurRadius}" Minimum="0" Maximum="40" />
+                <Border BorderBrush="Black" Margin="5">
+                    <Image Source="{Binding FreqsImage}"/>
+                </Border>
+                <TextBlock Text="{Binding HeartRate}" FontSize="32"/>
+                <controls:RangedProperty x:Name="HeartRateSignal" Min="0" Max="1" Caption="Signal"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

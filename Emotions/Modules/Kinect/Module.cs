@@ -12,8 +12,13 @@ namespace Emotions.Modules.Kinect
     [Export(typeof(IModule))]
     class Module : ModuleBase
     {
-        [Import]
-        private IKinectInputService _kinectService;
+        private readonly IKinectInputService _kinectService;
+
+        [ImportingConstructor]
+        public Module(IKinectInputService kinectInputService)
+        {
+            _kinectService = kinectInputService;
+        }
 
         public override void Initialize()
         {

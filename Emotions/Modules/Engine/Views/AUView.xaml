@@ -7,13 +7,15 @@
              mc:Ignorable="d" 
              d:DesignWidth="300">
     <Grid VerticalAlignment="Stretch" Background="White">
-        <StackPanel>
-            <controls:RangedProperty x:Name="AU1" Min="-1" Max="1" DoubleSisded="True"/>
-            <controls:RangedProperty x:Name="AU2" Min="-1" Max="1" DoubleSisded="True"/>
-            <controls:RangedProperty x:Name="AU3" Min="-1" Max="1" DoubleSisded="True"/>
-            <controls:RangedProperty x:Name="AU4" Min="-1" Max="1" DoubleSisded="True"/>
-            <controls:RangedProperty x:Name="AU5" Min="-1" Max="1" DoubleSisded="True"/>
-            <controls:RangedProperty x:Name="AU6" Min="-1" Max="1" DoubleSisded="True"/>
-        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Visible">
+            <StackPanel>
+                <controls:RangedProperty x:Name="AU1" Min="-1" Max="1" DoubleSisded="True"/>
+                <controls:RangedProperty x:Name="AU2" Min="-1" Max="1" DoubleSisded="True"/>
+                <controls:RangedProperty x:Name="AU3" Min="-1" Max="1" DoubleSisded="True"/>
+                <controls:RangedProperty x:Name="AU4" Min="-1" Max="1" DoubleSisded="True"/>
+                <controls:RangedProperty x:Name="AU5" Min="-1" Max="1" DoubleSisded="True"/>
+                <controls:RangedProperty x:Name="AU6" Min="-1" Max="1" DoubleSisded="True"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

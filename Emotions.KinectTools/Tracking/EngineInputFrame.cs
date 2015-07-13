@@ -74,7 +74,7 @@ namespace Emotions.KinectTools.Tracking
         public Point3 ShoulderCenter { get; set; }
         public Point3 ShoulderLeft { get; set; }
         public Point3 ShoulderRight { get; set; }
-
+        
         public object Clone()
         {
             return this.MemberwiseClone();
