@@ -16,13 +16,30 @@
         </Grid>
         <Grid Grid.Column="1" VerticalAlignment="Top" MinWidth="200" Margin="5">
             <StackPanel>
-                <TextBlock>Amplification</TextBlock>
-                <Slider Value="{Binding Amplification}" Minimum="0" Maximum="100" />
-                <TextBlock>Blur radius</TextBlock>
-                <Slider Value="{Binding BlurRadius}" Minimum="0" Maximum="40" />
-                <Border BorderBrush="Black" Margin="5">
-                    <Image Source="{Binding FreqsImage}"/>
-                </Border>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0">Amplification</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Value, ElementName=AmpSlider}"/>
+                    <Slider Grid.Row="0" Grid.Column="2" x:Name="AmpSlider" Value="{Binding Amplification}" Minimum="0" Maximum="100" />
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0">Blur radius</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Value, ElementName=BlurSlider}"/>
+                    <Slider Grid.Row="1" Grid.Column="2" x:Name="BlurSlider" Value="{Binding BlurRadius}" Minimum="0" Maximum="40"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0">Frequencies scale</TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Value, ElementName=FreqsSlider}"/>
+                    <Slider Grid.Row="2" Grid.Column="2" x:Name="FreqsSlider" Value="{Binding FreqsScale}" Minimum="1" Maximum="100"/>
+                </Grid>
+                <Image Source="{Binding FreqsImage}"/>
                 <TextBlock Text="{Binding HeartRate}" FontSize="32"/>
                 <controls:RangedProperty x:Name="HeartRateSignal" Min="0" Max="1" Caption="Signal"/>
             </StackPanel>

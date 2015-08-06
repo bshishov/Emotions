@@ -8,6 +8,7 @@ using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
 using Emotions.Modules.Kinect;
 using Emotions.Modules.Pulse.Views;
+using Emotions.Utilities;
 using Gemini.Framework;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
@@ -23,7 +24,7 @@ namespace Emotions.Modules.Pulse.ViewModels
         private readonly PulseDetector _detector;
         private readonly WriteableBitmap _amplifiedImage;
         private readonly WriteableBitmap _freqsImage;
-        private byte[] _freqsImageData;
+        private readonly byte[] _freqsImageData;
         private RangedProperty _signalControl;
 
         public WriteableBitmap AmplifiedImage
@@ -56,6 +57,18 @@ namespace Emotions.Modules.Pulse.ViewModels
             }
         }
 
+        private double _freqsScale;
+
+        public double FreqsScale
+        {
+            get { return _freqsScale; }
+            set
+            {
+                _freqsScale = value;
+                NotifyOfPropertyChange(() => FreqsScale);
+            }
+        }
+
         public double HeartRate { get; private set; }
 
         [ImportingConstructor]
@@ -67,20 +80,19 @@ namespace Emotions.Modules.Pulse.ViewModels
             _kinect.FramesReady += KinectOnFramesReady;
             if (_kinect.SkeletonFaceTracker != null)
                 _kinect.SkeletonFaceTracker.TrackSucceed += SkeletonFaceTrackerOnTrackSucceed;
-
-            _detector = new PulseDetector(100, ROIWidth, ROIHeight);
+            _detector = new PulseDetector(ROIWidth, ROIHeight);
             _detector.SetRegionOfInteres(300,200);
             _amplifiedImage = new WriteableBitmap(ROIWidth, ROIHeight, 96, 96, PixelFormats.Bgr24, null);
             
-            _freqsImage = new WriteableBitmap(300, 300, 96, 96, PixelFormats.Gray8, null);
-            _freqsImageData = new byte[300 * 300];
+            _freqsImage = new WriteableBitmap(300, 300, 96, 96, PixelFormats.Rgb24, null);
+            _freqsImageData = new byte[(int)_freqsImage.Width * (int)_freqsImage.Height * (_freqsImage.Format.BitsPerPixel + 7) / 8];
+
+            FreqsScale = 10;
         }
 
         private void SkeletonFaceTrackerOnTrackSucceed(object sender, FaceTrackFrame frame, Skeleton skeleton)
         {
             var point = frame.GetProjected3DShape()[FeaturePoint.BelowThreeFourthRightEyelid];
-            //var x = frame.FaceRect.Left + (int)(0.2 * frame.FaceRect.Width);
-            //var y = frame.FaceRect.Top + (int)(0.5 * frame.FaceRect.Height);
             _detector.SetRegionOfInteres((int)point.X, (int)point.Y + 20);
         }
 
@@ -104,32 +116,29 @@ namespace Emotions.Modules.Pulse.ViewModels
             NotifyOfPropertyChange(() => FreqsImage);
         }
 
+        // Todo: implement freqs view control
         private void DrawFreqs(WriteableBitmap image, double[] freqs)
         {
-            for (var i = 0; i < _freqsImageData.Length; i++)
-                _freqsImageData[i] = 255;
+            var bpp = (image.Format.BitsPerPixel + 7) / 8; // bytes per pixel
+            var bw = (int)(image.Width * bpp); // bytewidth
+
+            // Shift
+            for (var j = (int)image.Height - 1; j > 0 ; j--)
+                for (var i = 0; i < bw; i++)
+                    _freqsImageData[i + j*bw] = _freqsImageData[i + (j-1)*bw]; // copy prev row
+
+            var len = (int)Math.Min(image.Width, freqs.Length);
 
             // apply the transformation
-            for (var i = 0; i < freqs.Length / 2; i++)
+            for (var i = 0; i < len; i++)
             {
-                var x = i;
-                var height = freqs[i] * 100 * 50;
-                if (height > image.Height)
-                    height = image.Height;
-
-                for (int j = 0; j < height; j++)
-                {
-                    var y = (int)image.Height - j - 1;
-                    var pos = y * (int)image.Width + x;
-                    _freqsImageData[pos] = 0;
-                }
+                var color = ColorScale.HeatMap2.Get(freqs[i] * _freqsScale);
+                _freqsImageData[i * bpp + 0] = color.R;
+                _freqsImageData[i * bpp + 1] = color.G;
+                _freqsImageData[i * bpp + 2] = color.B;
             }
 
-            image.WritePixels(
-              new Int32Rect(0, 0, (int)image.Width, (int)image.Height), 
-              _freqsImageData,
-              (int)image.Width * ((image.Format.BitsPerPixel + 7) / 8),
-              0);
+            image.WritePixels(new Int32Rect(0, 0, (int)image.Width, (int)image.Height), _freqsImageData, bw, 0);
         }
 
         public void Dispose()

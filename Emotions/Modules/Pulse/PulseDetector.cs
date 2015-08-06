@@ -13,39 +13,38 @@ namespace Emotions.Modules.Pulse
         public double CutOff { get; set; }
         public double Signal { get { return _signal; } }
         
-        private readonly IFilter[] _hgfilters;
-        private readonly IFilter[] _lgfilters;
+        private readonly IFilter[] _bandPassfilters;
+        private readonly IFilter[] _lowPassfilters;
         private readonly byte[] _imageData;
         private readonly double[] _red;
         private readonly double[] _green;
         private readonly double[] _blue;
 
         private Rect _roi;
-        private readonly STFT _pulser = new STFT(256, 255);
+        private readonly STFT _stft = new STFT(512, 511);
         private double _signal;
+        private const double FrameRate = 30;
 
-        public PulseDetector(double amplification, int width, int height)
+        public PulseDetector(int width, int height)
         {
             _roi = new Rect(0, 0, width, height);
             CutOff = 1000;
             BlurRadius = 5;
+            Amplification = 50;
 
             _red = new double[width * height];
             _green = new double[width * height];
             _blue = new double[width * height];
             _imageData = new byte[width * height * 3];
             
-            _hgfilters = new IFilter[_red.Length];
-            _lgfilters = new IFilter[_red.Length];
-            
+            _bandPassfilters = new IFilter[_red.Length];
+            _lowPassfilters = new IFilter[_red.Length];
 
             for (var i = 0; i < _red.Length; i++)
             {
-                _hgfilters[i] = new Bandpass1Hzto4Hz();
-                _lgfilters[i] = new LowpassFilter4Hz();
+                _bandPassfilters[i] = new Bandpass1Hzto4Hz();
+                _lowPassfilters[i] = new LowpassFilter4Hz();
             }
-
-            Amplification = amplification;
         }
 
         public void SetRegionOfInteres(int x, int y)
@@ -61,19 +60,21 @@ namespace Emotions.Modules.Pulse
             _signal = 0.0;
             for (var i = 0; i < _red.Length; i++)
             {
-                //var gfiltered = _hgfilters[i].Filter(_lgfilters[i].Filter(_green[i]));
-                var gfiltered = _hgfilters[i].Filter(_green[i]);
-                _green[i] += Math.Min((1 + Amplification) * gfiltered, CutOff / 8.0);
-                _signal += _green[i] / _red.Length;
+                //var gfiltered = _bandPassfilters[i].Filter(_lowPassfilters[i].Filter(_green[i])); // Lowpass (noise reduction) +  bandpass filter
+                var gfiltered = _bandPassfilters[i].Filter(_green[i]); // Bandpass only
+                //var gfiltered = _lowPassfilters[i].Filter(_green[i]); // Lowpass only
+                //var gfiltered = _green[i]; // Not filtered
+                _green[i] += Math.Min(Amplification * gfiltered, CutOff / 8.0);
+                _signal += _green[i] / _green.Length; // average signal of all pixels
             }
-            _pulser.Proceed(_signal); 
+            _stft.Proceed(_signal); 
 
             FromIntensity(_red, _green, _blue, _imageData);
             return new PulseFrame()
             {
                 HeartRate = GetBpm(), 
                 Signal = _signal, 
-                FreqsData = _pulser.FFTMagnitude.ToArray(),
+                FreqsData = _stft.FFTMagnitude.ToArray(),
                 RegionOfInterest = _roi,
                 AmplifiedColorFrame = _imageData
             };
@@ -105,7 +106,7 @@ namespace Emotions.Modules.Pulse
 
         public double GetBpm()
         {
-            return _pulser.GetFreq(30) * 60;
+            return _stft.GetFreq(FrameRate) * 60; // Hz to beats per minute
         }
     }
 }

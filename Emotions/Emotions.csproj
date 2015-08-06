@@ -126,7 +126,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FACS\ActionUnits.cs" />
     <Compile Include="MainBootstrapper.cs" />
     <Compile Include="Modules\Engine\EngineInputFrameEditorProvider.cs" />
     <Compile Include="Modules\Engine\Module.cs" />
@@ -173,6 +172,7 @@
     <Compile Include="Modules\Kinect\Recording\Recorder.cs" />
     <Compile Include="Modules\Kinect\Recording\WriterContainer.cs" />
     <Compile Include="Utilities\BoolToVisibilityConverter.cs" />
+    <Compile Include="Utilities\ColorScale.cs" />
     <Compile Include="Utilities\EngineDrawer.cs" />
     <Compile Include="Utilities\BoxBlur.cs" />
     <Compile Include="Utilities\SkeletonDrawer.cs" />
