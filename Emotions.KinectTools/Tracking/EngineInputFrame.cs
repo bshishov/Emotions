@@ -205,7 +205,5 @@ namespace Emotions.KinectTools.Tracking
 
             return frame;
         }
-
-       
     }
 }

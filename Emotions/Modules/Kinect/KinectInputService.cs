@@ -51,10 +51,9 @@ namespace Emotions.Modules.Kinect
 
             if(_kinectSource != null)
                 _kinectSource.Stop();
-
         }
         
-        public IKinectSource LoadRecording(string path)
+        private IKinectSource LoadRecording(string path)
         {
             try
             {

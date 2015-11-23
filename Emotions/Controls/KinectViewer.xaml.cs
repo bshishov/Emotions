@@ -5,7 +5,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Emotions.KinectTools.Frames;
 using Emotions.KinectTools.Sources;
-using Emotions.Utilities;
 
 namespace Emotions.Controls
 {

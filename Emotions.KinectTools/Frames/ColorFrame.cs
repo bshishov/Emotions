@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Windows;
 using Microsoft.Kinect;
 
 namespace Emotions.KinectTools.Frames

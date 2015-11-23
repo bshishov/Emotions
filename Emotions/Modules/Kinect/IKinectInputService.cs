@@ -7,6 +7,5 @@ namespace Emotions.Modules.Kinect
         bool IsKinectAvailable { get; }
         IKinectSource GetKinect();
         void Dispose();
-        IKinectSource LoadRecording(string path);
     }
 }

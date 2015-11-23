@@ -37,11 +37,6 @@ namespace Emotions.KinectTools.Tracking
         public event SkeletonTracked SkeletonTracked;
         public event SkeletonTracked SkeletonUnTracked;
 
-        private void OnSkeletonTracked(int trackingId)
-        {
-           
-        }
-
         ~SkeletonTracker()
         {
             Dispose();
