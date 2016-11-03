@@ -1,8 +1,7 @@
 # Emotions
 This is emotion recognizing tool for RGB-D camera (Kinect). It was my graduate project in 2015. Its main purpose is to provide facial features recording with MS Kinect during the special experiment. It comes with recording and playback module wich tracks change of facial parameters along with experiment state. At the moment, most of the data analysis is not yet implemented in tool itself but you can check the approach by looking at 'matlab' folder. But first, checkout the [slides](/doc/slides.pdf).
 
-![Screenshot. Kinect Color View](/doc/screenshots/screenshot_view_color.png)
-![Screenshot. Kinect Depth View](/doc/screenshots/screenshot_view_depth.png)
+![Screenshot. Kinect Color View](/doc/screenshots/screenshot_view_color.png) ![Screenshot. Kinect Depth View](/doc/screenshots/screenshot_view_depth.png)
 
 
 
