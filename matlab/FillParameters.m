@@ -1,0 +1,23 @@
+parameters = [
+    GetRow(game01,  87000, 120000);     
+    GetRow(game02,  90000, 120000);  
+    GetRow(game03,  60000, 140000);     
+    GetRow(game04,  60000, 110000);      
+    GetRow(game05,  85000, 115000);       
+    GetRow(game06,  95000, 117000);      
+    GetRow(game07,  80000, 115000); 
+    GetRow(game08,  92000, 110000);       
+    GetRow(game09,  90000, 120000);     
+    GetRow(game10,  96000, 120000);     
+    GetRow(game11,  90000, 110000);       
+    GetRow(game12,  90000, 125000);        
+    GetRow(game13,  70000, 110000);      
+    GetRow(game14,  90000, 110000);      
+    GetRow(game15,  90000, 136000);       
+    GetRow(game16,  66000, 120000);       
+    GetRow(game17,  60000, 118000);
+    GetRow(game18,  90000, 130000);        
+    GetRow(game19,  90000, 110000);    
+    GetRow(game20,  94000, 138000);    
+    GetRow(game21,  96000, 120000);    
+    ];
