@@ -73,7 +73,7 @@ namespace Emotions.Modules.Game.ViewModels
         private const int TargetDelay = 100;
         private const int TTL = 1300; // Time to live in ms
         private const double GoodCirclePropability = 0.5;
-        private const long TargetTime = 3 * 60 * 1000; // minutes * (sec/min) * (ms / min)
+        public const long TargetTime = 3 * 60 * 1000; // minutes * (sec/min) * (ms / min)
 
         
         public bool ShowScoreboard

@@ -81,6 +81,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -173,6 +174,7 @@
     <Compile Include="Modules\Kinect\Recording\WriterContainer.cs" />
     <Compile Include="Utilities\BoolToVisibilityConverter.cs" />
     <Compile Include="Utilities\ColorScale.cs" />
+    <Compile Include="Utilities\CsvWriter.cs" />
     <Compile Include="Utilities\EngineDrawer.cs" />
     <Compile Include="Utilities\BoxBlur.cs" />
     <Compile Include="Utilities\SkeletonDrawer.cs" />
