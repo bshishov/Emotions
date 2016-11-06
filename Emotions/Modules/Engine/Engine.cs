@@ -14,7 +14,7 @@ namespace Emotions.Modules.Engine
     class Engine : IEngineService, IDisposable
     {
         private CancellationTokenSource _tokenSource;
-        private const int FrameDelay = 1000 / 10; // 1000milliseconds / frames per second
+        public const int FrameDelay = 1000 / 10; // 1000milliseconds / frames per second
         private EngineInputFrame _inputBuffer;
         private readonly ILog _log = LogManager.GetLog(typeof(Engine));
         private IKinectSource _source;
